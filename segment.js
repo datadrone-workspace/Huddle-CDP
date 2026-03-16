@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════
-   HUDDLE — Analytics Layer
-   Workspace-level unified profile + event tracking
-═══════════════════════════════════════════════ */
-
 const HuddleAnalytics = {
   user: null,
   workspace: null,
@@ -54,7 +49,6 @@ const HuddleAnalytics = {
     this._identifyUser();
   },
 
-  /* ── GROUP (workspace-level unified profile) ── */
   _groupWorkspace() {
     const w = this.workspace;
     if (!w || !w.id) return;
@@ -359,9 +353,7 @@ const HuddleAnalytics = {
     }
   },
 
-  /* ── WORKSPACE DELETED ──────────────────────── */
   workspaceDeleted(p) {
-    // Re-identify with deletion traits before wiping
     if (this.user) {
       const traits = {
         workspace_deleted:     true,
