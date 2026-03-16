@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — Huddle</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="responsive.css"/>
+  <style>
+    body { min-height:100vh; }
+
+    .auth-left {
+      width: 520px; flex-shrink:0;
+      background: var(--surface);
+      border-right: 1px solid var(--border-2);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .auth-left-header {
+      padding: 32px 48px 0;
+      display: flex; align-items:center; justify-content:space-between;
+    }
+    .auth-brand { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; }
+    .auth-brand-logo { width:32px; height:32px; background:var(--primary); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; box-shadow:0 4px 16px rgba(123,97,255,0.4); }
+    .auth-form-wrap { padding: 48px 48px; flex:1; }
+    .auth-title { font-size:30px; font-weight:800; letter-spacing:-1.2px; margin-bottom:6px; }
+    .auth-subtitle { font-size:14px; color:var(--text-3); margin-bottom:36px; line-height:1.6; }
+
+    .btn-auth-submit {
+      width:100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--r);
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: var(--t);
+      margin-top: 8px;
+      display: flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn-auth-submit:hover { background:var(--primary-2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(123,97,255,0.45); }
+
+    .btn-social {
+      width:100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r);
+      padding: 13px;
+      font-size: 14px; font-weight: 600;
+      font-family: var(--font); color: var(--text-2);
+      cursor: pointer; transition: var(--t);
+      display: flex; align-items:center; justify-content:center; gap:10px;
+      margin-bottom: 10px;
+    }
+    .btn-social:hover { border-color:var(--border-3); color:var(--text); background:var(--surface-3); }
+
+    .auth-divider { display:flex; align-items:center; gap:14px; margin:24px 0; font-size:12px; color:var(--text-4); }
+    .auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border-2); }
+
+    .forgot-link { float:right; font-size:12px; color:var(--primary-2); font-weight:600; }
+    .forgot-link:hover { text-decoration:underline; }
+
+    .demo-notice {
+      background: linear-gradient(135deg, var(--primary-dim), rgba(35,209,139,0.06));
+      border: 1px solid rgba(123,97,255,0.2);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      margin-bottom: 28px;
+    }
+    .demo-notice-title { font-size:12px; font-weight:700; color:var(--primary-2); margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+    .demo-notice p { font-size:12px; color:var(--text-3); line-height:1.6; }
+
+    .workspace-chip {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: var(--r); padding: 12px 16px;
+      margin-bottom: 20px; cursor: pointer; transition: var(--t);
+    }
+    .workspace-chip:hover { border-color:var(--primary); background:var(--primary-dim); }
+    .ws-chip-logo { width:36px; height:36px; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; flex-shrink:0; }
+    .ws-chip-name { font-size:14px; font-weight:700; }
+    .ws-chip-url { font-size:12px; color:var(--text-4); margin-top:1px; }
+    .ws-chip-arrow { margin-left:auto; font-size:16px; color:var(--text-4); }
+
+    .auth-footer-text { text-align:center; font-size:13px; color:var(--text-4); margin-top:28px; }
+    .auth-footer-text a { color:var(--primary-2); font-weight:600; }
+    .auth-footer-text a:hover { text-decoration:underline; }
+
+    
+  </style>
+</head>
+<body>
+
+  <!-- LEFT: FORM -->
+  <div class="auth-left">
+    <div class="auth-left-header">
+      <a href="index.html" class="auth-brand">
+        <div class="auth-brand-logo">⬡</div>
+        Huddle
+      </a>
+      <a href="signup.html" class="btn btn-ghost btn-sm">Create account →</a>
+    </div>
+    <div class="auth-form-wrap">
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Sign in to your workspace and pick up right where you left off.</p>
+
+      <div class="workspace-chip" id="wsChip" style="display:none" onclick="prefillEmail()">
+        <div class="ws-chip-logo">A</div>
+        <div>
+          <div class="ws-chip-name">Acme Corp</div>
+          <div class="ws-chip-url">huddle.app/acme-corp</div>
+        </div>
+        <span class="ws-chip-arrow">→</span>
+      </div>
+
+      <button class="btn-social">
+        <span>G</span> Continue with Google
+      </button>
+
+      <div class="auth-divider">or sign in with email</div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Work email</label>
+          <input type="email" class="input" id="email" placeholder="you@company.com" id="email" placeholder="you@company.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            Password
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </label>
+          <input type="password" class="input" id="password" placeholder="Your password"  required/>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+          <input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;accent-color:var(--primary)"/>
+          <label for="rememberMe" style="font-size:13px;color:var(--text-3);cursor:pointer">Keep me signed in for 30 days</label>
+        </div>
+        <button type="submit" class="btn-auth-submit">Sign in →</button>
+      </form>
+
+      <p class="auth-footer-text">
+        Don't have an account? <a href="signup.html">Create one free</a>
+      </p>
+      <p class="auth-footer-text" style="margin-top:10px;font-size:11px">
+        Your data is encrypted and never sold.
+      </p>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";analytics._cdn="https://cdn.segment.com";analytics.SNIPPET_VERSION="5.2.0";
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+    }}();
+  </script>
+  <script src="segment.js"></script>
+  <script>
+    window.addEventListener('huddle:event', e => addSegEvent(e.detail));
+    HuddleAnalytics.page('Login Page');
+
+    // Pre-fill from sessionStorage if user exists
+    const _savedUser = JSON.parse(sessionStorage.getItem('huddle_user') || 'null');
+    const _savedWs   = JSON.parse(sessionStorage.getItem('huddle_workspace') || 'null');
+    function prefillEmail() {
+      if (_savedUser) document.getElementById('email').value = _savedUser.email || '';
+    }
+    if (_savedUser && _savedWs) {
+      const chip = document.getElementById('wsChip');
+      if (chip) {
+        chip.style.display = 'flex';
+        document.getElementById('chipLogo').textContent = (_savedWs.name || 'W').charAt(0).toUpperCase();
+        document.getElementById('chipName').textContent = _savedWs.name || 'Workspace';
+        document.getElementById('chipUrl').textContent  = 'huddle.app/' + (_savedWs.name || 'workspace').toLowerCase().replace(/\s+/g, '-');
+        document.getElementById('email').value = _savedUser.email || '';
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+
+      // If returning user exists in session, keep their data intact
+      let loginUser = _savedUser;
+      if (!loginUser) {
+        // New login with no session — create minimal user
+        loginUser = { id: 'usr_' + Math.random().toString(36).substr(2,8), name: email.split('@')[0], email, role: 'admin', plan: 'free', created_at: new Date().toISOString() };
+        sessionStorage.setItem('huddle_user', JSON.stringify(loginUser));
+      }
+      // Do NOT overwrite workspace — keep whatever was saved from onboarding
+      if (!sessionStorage.getItem('huddle_workspace')) {
+        // Only set a blank workspace if truly nothing exists
+        const wsId = 'ws_' + Math.random().toString(36).substr(2,8);
+        sessionStorage.setItem('huddle_workspace', JSON.stringify({ id: wsId, name: loginUser.name + "'s Workspace", members: 0, channels_list: [], members_list: [], messages: 0, plan: 'free' }));
+      }
+
+      HuddleAnalytics.identify(loginUser);
+      HuddleAnalytics.userLoggedIn({ user_id: loginUser.id, email, workspace_id: JSON.parse(sessionStorage.getItem('huddle_workspace')).id });
+      showToast('Signed in', 'Welcome back to Huddle', 'success');
+      setTimeout(() => { window.location.href = 'app.html'; }, 900);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Set Up Workspace — Huddle</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="responsive.css"/>
+  <style>
+    body { min-height:100vh; display:flex; flex-direction:column; background:var(--bg); }
+
+    /* TOP BAR */
+    .ob-topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 40px; height:64px;
+      background:var(--surface); border-bottom:1px solid var(--border-2);
+      flex-shrink:0;
+    }
+    .ob-brand { display:flex; align-items:center; gap:10px; font-size:17px; font-weight:800; }
+    .ob-brand-logo { width:30px; height:30px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 3px 12px rgba(123,97,255,0.4); }
+    .ob-progress-track {
+      flex:1; margin:0 60px;
+      height:4px; background:var(--surface-3);
+      border-radius:999px; overflow:hidden;
+    }
+    .ob-progress-fill {
+      height:100%;
+      background:linear-gradient(90deg, var(--primary), var(--primary-2));
+      border-radius:999px;
+      transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
+      box-shadow:0 0 12px rgba(123,97,255,0.4);
+    }
+    .ob-step-label { font-size:13px; font-weight:600; color:var(--text-3); min-width:80px; text-align:right; }
+
+    /* MAIN LAYOUT */
+    .ob-body {
+      flex:1; display:flex; overflow:hidden;
+    }
+
+    /* SIDEBAR */
+    .ob-sidebar {
+      width:280px; flex-shrink:0;
+      background:var(--surface); border-right:1px solid var(--border-2);
+      padding:32px 24px;
+      overflow-y:auto;
+    }
+    .ob-sidebar-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-4); margin-bottom:20px; }
+    .ob-step-list { display:flex; flex-direction:column; gap:2px; }
+    .ob-step-row {
+      display:flex; align-items:center; gap:14px;
+      padding:12px 14px; border-radius:var(--r);
+      cursor:default; transition:var(--t);
+      position:relative;
+    }
+    .ob-step-row.active { background:var(--primary-dim); }
+    .ob-step-row.done { opacity:0.8; }
+    .ob-step-num {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:700;
+      border:2px solid var(--border-2);
+      color:var(--text-4); flex-shrink:0;
+      transition:var(--t);
+    }
+    .ob-step-row.active .ob-step-num { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+    .ob-step-row.done .ob-step-num  { border-color:var(--success); color:var(--success); background:var(--success-dim); }
+    .ob-step-info { flex:1; min-width:0; }
+    .ob-step-name { font-size:13px; font-weight:600; color:var(--text-3); }
+    .ob-step-row.active .ob-step-name { color:var(--text); }
+    .ob-step-row.done .ob-step-name  { color:var(--text-2); }
+    .ob-step-desc { font-size:11px; color:var(--text-4); margin-top:2px; }
+    .ob-step-connector { width:2px; height:16px; background:var(--border-2); margin:0 0 0 29px; }
+
+    /* EVENT LOG */
+    .ob-event-sidebar {
+      padding:24px;
+      border-top:1px solid var(--border-2);
+      margin-top:auto;
+    }
+    .ob-event-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-4); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+
+    /* MAIN CONTENT */
+    .ob-main {
+      flex:1; overflow-y:auto;
+      display:flex; align-items:flex-start; justify-content:center;
+      padding:60px 48px;
+    }
+    .ob-content { width:100%; max-width:560px; }
+
+    /* STEP PANEL */
+    .ob-panel { display:none; }
+    .ob-panel.active { display:block; animation:fadeUp 0.35s ease; }
+
+    .ob-panel-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      background:var(--primary-dim); border:1px solid rgba(123,97,255,0.2);
+      border-radius:var(--r-full); padding:5px 14px;
+      font-size:11px; font-weight:700; color:var(--primary-2);
+      text-transform:uppercase; letter-spacing:0.5px;
+      margin-bottom:20px;
+    }
+    .ob-panel-title { font-size:34px; font-weight:800; letter-spacing:-1.5px; margin-bottom:10px; }
+    .ob-panel-subtitle { font-size:15px; color:var(--text-3); margin-bottom:36px; line-height:1.7; }
+
+    .ob-btn-row { display:flex; align-items:center; gap:12px; margin-top:32px; }
+    .ob-next-btn {
+      background:var(--primary); color:#fff; border:none;
+      border-radius:var(--r); padding:14px 28px;
+      font-size:15px; font-weight:700; font-family:var(--font);
+      cursor:pointer; transition:var(--t);
+      display:flex; align-items:center; gap:8px;
+    }
+    .ob-next-btn:hover { background:var(--primary-2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(123,97,255,0.4); }
+    .ob-skip-btn { background:none; border:none; color:var(--text-4); font-size:13px; font-family:var(--font); cursor:pointer; padding:12px; transition:var(--t); }
+    .ob-skip-btn:hover { color:var(--text-3); }
+
+    /* INVITE SECTION */
+    .invite-add-row { display:flex; gap:10px; margin-bottom:16px; }
+    .invite-add-row .input { flex:1; }
+    .invite-chips { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .invite-chip {
+      display:flex; align-items:center; gap:12px;
+      background:var(--surface-2); border:1px solid var(--border-2);
+      border-radius:var(--r); padding:12px 16px;
+    }
+    .invite-chip-av { width:32px; height:32px; border-radius:50%; background:var(--primary-dim); border:1px solid rgba(123,97,255,0.2); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--primary-2); flex-shrink:0; }
+    .invite-chip-email { flex:1; font-size:13px; color:var(--text-2); }
+    .invite-chip-status { font-size:10px; font-weight:700; color:var(--text-4); background:var(--surface-3); padding:3px 8px; border-radius:4px; }
+    .invite-chip-remove { background:none; border:none; color:var(--text-4); font-size:18px; cursor:pointer; line-height:1; transition:var(--t); padding:0; }
+    .invite-chip-remove:hover { color:var(--danger); }
+    .invite-help { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; font-size:12px; color:var(--text-3); line-height:1.6; }
+    .invite-help strong { color:var(--text-2); }
+
+    /* CHANNEL SECTION */
+    .channel-chips { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .channel-chip {
+      display:flex; align-items:center; gap:12px;
+      background:var(--surface-2); border:1px solid var(--border-2);
+      border-radius:var(--r); padding:13px 16px;
+      transition:var(--t);
+    }
+    .channel-chip.default-ch { border-style:dashed; }
+    .ch-icon-pill {
+      width:32px; height:32px; border-radius:8px;
+      background:var(--surface-3); display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:700; color:var(--text-2); flex-shrink:0;
+    }
+    .ch-icon-pill.private { background:var(--warning-dim); color:var(--warning); }
+    .ch-name-text { flex:1; font-size:14px; font-weight:600; }
+    .ch-type-label { font-size:11px; color:var(--text-4); }
+    .channel-type-switch {
+      display:flex; gap:8px; margin-bottom:16px;
+    }
+    .ch-type-btn {
+      flex:1; padding:10px; border-radius:var(--r-sm);
+      border:1px solid var(--border-2); background:var(--surface-2);
+      color:var(--text-3); font-size:13px; font-weight:600;
+      font-family:var(--font); cursor:pointer; transition:var(--t);
+      text-align:center;
+    }
+    .ch-type-btn.selected { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+
+    /* PROFILE SECTION */
+    .profile-preview-card {
+      background:var(--surface-2); border:1px solid var(--border-2);
+      border-radius:var(--r-md); padding:24px;
+      display:flex; align-items:center; gap:20px;
+      margin-bottom:28px;
+    }
+    .profile-big-av {
+      width:72px; height:72px; border-radius:20px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px; font-weight:800; color:#fff;
+      flex-shrink:0; background:var(--primary);
+      box-shadow:0 8px 24px rgba(123,97,255,0.4);
+    }
+    .profile-preview-name { font-size:22px; font-weight:800; letter-spacing:-0.5px; }
+    .profile-preview-role { font-size:14px; color:var(--text-3); margin-top:4px; }
+    .profile-preview-workspace { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--text-4); }
+    .profile-preview-workspace-dot { width:16px; height:16px; border-radius:4px; background:var(--primary); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; }
+
+    /* FIRST MESSAGE SECTION */
+    .first-msg-preview {
+      background:var(--surface-2); border:1px solid var(--border-2);
+      border-radius:var(--r-md); overflow:hidden; margin-bottom:24px;
+    }
+    .fmp-header {
+      display:flex; align-items:center; gap:10px;
+      padding:14px 18px; background:var(--sidebar);
+      border-bottom:1px solid var(--border);
+    }
+    .fmp-channel { font-size:14px; font-weight:700; }
+    .fmp-members { font-size:12px; color:var(--text-4); margin-left:auto; }
+    .fmp-body { padding:16px; }
+    .fmp-existing { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+    .fmp-msg { display:flex; gap:10px; }
+    .fmp-av { width:30px; height:30px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+    .fmp-meta { font-size:12px; margin-bottom:3px; }
+    .fmp-author { font-weight:700; }
+    .fmp-time { color:var(--text-4); margin-left:6px; }
+    .fmp-text { font-size:13px; color:var(--text-2); line-height:1.5; }
+    .fmp-input-wrap { display:flex; gap:10px; align-items:flex-start; }
+    .fmp-your-av { width:30px; height:30px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; background:var(--primary); }
+    .fmp-textarea {
+      flex:1; background:var(--surface); border:1.5px solid var(--border-2);
+      border-radius:var(--r-sm); padding:10px 14px;
+      font-size:13px; color:var(--text); font-family:var(--font);
+      resize:none; line-height:1.6; transition:var(--t);
+    }
+    .fmp-textarea:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 4px var(--primary-dim); }
+
+    /* SUCCESS */
+    .ob-success { text-align:center; }
+    .success-emoji { font-size:72px; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; display:block; margin-bottom:16px; }
+    .success-confetti { display:flex; justify-content:center; gap:10px; font-size:28px; margin-bottom:24px; }
+    .ob-success h2 { font-size:36px; font-weight:800; letter-spacing:-1.5px; margin-bottom:12px; }
+    .ob-success p { font-size:16px; color:var(--text-3); margin-bottom:32px; line-height:1.7; }
+    .success-summary {
+      background:var(--surface-2); border:1px solid var(--border-2);
+      border-radius:var(--r-md); padding:24px;
+      text-align:left; margin-bottom:28px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .summary-row { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-2); }
+    .summary-row span { color:var(--success); font-size:16px; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="ob-topbar">
+    <a href="index.html" class="ob-brand">
+      <div class="ob-brand-logo">⬡</div>
+      Huddle
+    </a>
+    <div class="ob-progress-track">
+      <div class="ob-progress-fill" id="progressFill" style="width:20%"></div>
+    </div>
+    <span class="ob-step-label" id="stepLabel">Step 1 / 5</span>
+  </div>
+
+  <div class="ob-body">
+
+    <!-- SIDEBAR -->
+    <div class="ob-sidebar">
+      <div class="ob-sidebar-title">Setup Progress</div>
+      <div class="ob-step-list">
+        <div class="ob-step-row active" id="sr1">
+          <div class="ob-step-num" id="sn1">1</div>
+          <div class="ob-step-info">
+            <div class="ob-step-name">Workspace</div>
+            <div class="ob-step-desc">Name your team's home</div>
+          </div>
+        </div>
+        <div class="ob-step-connector"></div>
+        <div class="ob-step-row" id="sr2">
+          <div class="ob-step-num" id="sn2">2</div>
+          <div class="ob-step-info">
+            <div class="ob-step-name">Invite Team</div>
+            <div class="ob-step-desc">Bring your colleagues in</div>
+          </div>
+        </div>
+        <div class="ob-step-connector"></div>
+        <div class="ob-step-row" id="sr3">
+          <div class="ob-step-num" id="sn3">3</div>
+          <div class="ob-step-info">
+            <div class="ob-step-name">Create Channels</div>
+            <div class="ob-step-desc">Organize conversations</div>
+          </div>
+        </div>
+        <div class="ob-step-connector"></div>
+        <div class="ob-step-row" id="sr4">
+          <div class="ob-step-num" id="sn4">4</div>
+          <div class="ob-step-info">
+            <div class="ob-step-name">Your Profile</div>
+            <div class="ob-step-desc">Let teammates know you</div>
+          </div>
+        </div>
+        <div class="ob-step-connector"></div>
+        <div class="ob-step-row" id="sr5">
+          <div class="ob-step-num" id="sn5">5</div>
+          <div class="ob-step-info">
+            <div class="ob-step-name">First Message</div>
+            <div class="ob-step-desc">Say hello to the team</div>
+          </div>
+        </div>
+      </div>
+
+      </div></div>
+
+    <!-- MAIN -->
+    <div class="ob-main">
+      <div class="ob-content">
+
+        <!-- STEP 1: WORKSPACE -->
+        <div class="ob-panel active" id="panel1">
+          <div class="ob-panel-badge">Step 01 of 05</div>
+          <h2 class="ob-panel-title">Name your<br/>workspace </h2>
+          <p class="ob-panel-subtitle">This is your team's home in Huddle. Choose a name that represents your company or team. You can always rename it later.</p>
+
+          <div class="form-group">
+            <label class="form-label">Workspace name</label>
+            <input type="text" class="input" id="workspaceName" placeholder="e.g. Acme Corp"/>
+            <div class="form-hint">This is what your team members will see when they join.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Workspace URL</label>
+            <div style="display:flex;align-items:stretch;gap:0">
+              <span style="background:var(--bg);border:1.5px solid var(--border-2);border-right:none;padding:13px 16px;border-radius:var(--r) 0 0 var(--r);font-size:14px;color:var(--text-4);white-space:nowrap;display:flex;align-items:center">huddle.app/</span>
+              <input type="text" class="input" id="workspaceUrl" placeholder="e.g. acme-corp" style="border-radius:0 var(--r) var(--r) 0;border-left-color:transparent"/>
+            </div>
+            <div class="form-hint">Your unique workspace URL. Lowercase letters and hyphens only.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Industry</label>
+            <select class="input" id="industry">
+              <option>SaaS / Software</option>
+              <option>E-commerce</option>
+              <option>Marketing Agency</option>
+              <option>Healthcare</option>
+              <option>Finance / Fintech</option>
+              <option>Education</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="ob-btn-row">
+            <button class="ob-next-btn" onclick="nextStep(1)">
+              Create Workspace <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: INVITE -->
+        <div class="ob-panel" id="panel2">
+          <div class="ob-panel-badge">Step 02 of 05</div>
+          <h2 class="ob-panel-title">Invite your<br/>team </h2>
+          <p class="ob-panel-subtitle">Huddle works best when your whole team is here. Invite your colleagues to get started.</p>
+
+          <div class="invite-chips" id="inviteList"></div>
+          <div class="invite-add-row">
+            <input type="email" class="input" id="inviteInput" placeholder="teammate@company.com"/>
+            <button class="btn btn-outline" onclick="addInvite()" style="flex-shrink:0">+ Add</button>
+          </div>
+          <div class="ob-btn-row">
+            <button class="ob-next-btn" onclick="nextStep(2)">Send Invites →</button>
+            <button class="ob-skip-btn" onclick="nextStep(2)">Skip for now</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: CHANNELS -->
+        <div class="ob-panel" id="panel3">
+          <div class="ob-panel-badge">Step 03 of 05</div>
+          <h2 class="ob-panel-title">Create your<br/>channels </h2>
+          <p class="ob-panel-subtitle">Channels keep conversations organized by topic or project. Organize conversations by topic, project, or team.</p>
+
+          <div class="channel-chips" id="channelList">
+            <div class="channel-chip default-ch">
+              <div class="ch-icon-pill">#</div>
+              <div style="flex:1"><div class="ch-name-text"># general</div></div>
+              <div class="ch-type-label">Default · Public</div>
+            </div>
+            <div class="channel-chip default-ch">
+              <div class="ch-icon-pill">#</div>
+              <div style="flex:1"><div class="ch-name-text"># random</div></div>
+              <div class="ch-type-label">Default · Public</div>
+            </div>
+          </div>
+
+          <div class="channel-type-switch">
+            <button class="ch-type-btn selected" id="chTypePublic" onclick="setChType('public')">🌐 Public</button>
+            <button class="ch-type-btn" id="chTypePrivate" onclick="setChType('private')">🔒 Private</button>
+          </div>
+          <div class="invite-add-row">
+            <input type="text" class="input" id="channelInput" placeholder="e.g. marketing, engineering, design..."/>
+            <button class="btn btn-outline" onclick="addChannel()" style="flex-shrink:0">+ Create</button>
+          </div>
+          <div class="ob-btn-row">
+            <button class="ob-next-btn" onclick="nextStep(3)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: PROFILE -->
+        <div class="ob-panel" id="panel4">
+          <div class="ob-panel-badge">Step 04 of 05</div>
+          <h2 class="ob-panel-title">Complete your<br/>profile </h2>
+          <p class="ob-panel-subtitle">Help your teammates know who you are. Help your teammates know who you are.</p>
+
+          <div class="profile-preview-card">
+            <div class="profile-big-av" id="profileBigAv">J</div>
+            <div>
+              <div class="profile-preview-name" id="profilePreviewName">John Smith</div>
+              <div class="profile-preview-role" id="profilePreviewRole">Add your role below...</div>
+              <div class="profile-preview-workspace">
+                <div class="profile-preview-workspace-dot">A</div>
+                <span id="profilePreviewWs">Your Workspace</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Display name</label>
+            <input type="text" class="input" id="displayName" placeholder="How should teammates address you?"
+              oninput="document.getElementById('profilePreviewName').textContent=this.value||'Your name';document.getElementById('profileBigAv').textContent=(this.value||'?')[0].toUpperCase()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job title / Role</label>
+            <input type="text" class="input" id="jobTitle" placeholder="e.g. Product Manager, Engineer, Designer"
+              oninput="document.getElementById('profilePreviewRole').textContent=this.value||'Add your role below...'"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="form-group">
+              <label class="form-label">Timezone</label>
+              <select class="input" id="timezone">
+                <option>UTC+05:30 — India (IST)</option>
+                <option>UTC+00:00 — London (GMT)</option>
+                <option>UTC-05:00 — New York (EST)</option>
+                <option>UTC-08:00 — San Francisco (PST)</option>
+                <option>UTC+01:00 — Paris (CET)</option>
+                <option>UTC+08:00 — Singapore (SGT)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred language</label>
+              <select class="input" id="language">
+                <option>English</option>
+                <option>Tamil</option>
+                <option>Hindi</option>
+                <option>Spanish</option>
+                <option>French</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">What are you working on?</label>
+            <input type="text" class="input" id="currentFocus" placeholder="e.g. Q4 product launch, customer onboarding..."/>
+            <div class="form-hint">This shows up as your status to help teammates know your focus.</div>
+          </div>
+          <div class="ob-btn-row">
+            <button class="ob-next-btn" onclick="nextStep(4)">Save Profile →</button>
+          </div>
+        </div>
+
+        <!-- STEP 5: FIRST MESSAGE -->
+        <div class="ob-panel" id="panel5">
+          <div class="ob-panel-badge">Step 05 of 05</div>
+          <h2 class="ob-panel-title">Send your first<br/>message </h2>
+          <p class="ob-panel-subtitle">Say hello to your team and get the conversation started.</p>
+
+          <div class="first-msg-preview">
+            <div class="fmp-header">
+              <span style="color:var(--text-3)">#</span>
+              <span class="fmp-channel">general</span>
+              <span class="fmp-members" id="fmpMembers">1 member</span>
+            </div>
+            <div class="fmp-body">
+              <div class="fmp-existing">
+                <div class="fmp-msg">
+                  <div class="fmp-av" style="background:#23D18B">K</div>
+                  <div>
+                    <div class="fmp-meta"><span class="fmp-author">Kim L.</span><span class="fmp-time">9:48 AM</span></div>
+                    <div class="fmp-text">Welcome everyone! So excited to use Huddle. Let's build something great together </div>
+                  </div>
+                </div>
+                <div class="fmp-msg">
+                  <div class="fmp-av" style="background:#F5A623">M</div>
+                  <div>
+                    <div class="fmp-meta"><span class="fmp-author">Maya T.</span><span class="fmp-time">9:52 AM</span></div>
+                    <div class="fmp-text">Agreed! This looks so clean. Can't wait to migrate from Slack 😄</div>
+                  </div>
+                </div>
+              </div>
+              <div class="fmp-input-wrap">
+                <div class="fmp-your-av" id="yourAvatar">J</div>
+                <textarea class="fmp-textarea" id="firstMsgText" rows="3" placeholder="Say hello to your team...">Hey everyone! Excited to be using Huddle. Let's make this workspace awesome </textarea>
+              </div>
+            </div>
+          </div>
+
+          <button class="ob-next-btn" onclick="sendFirstMessage()" style="width:100%;justify-content:center;font-size:16px;padding:16px">
+             Send Message & Complete Setup
+          </button>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="ob-panel" id="panelSuccess">
+          <div class="ob-success">
+            <span class="success-emoji"></span>
+            <div class="success-confetti">    </div>
+            <h2>You're all set</h2>
+            <p>Your workspace is live. Your team has been invited. Time to get to work.</p>
+            <div class="success-summary" id="successSummary">
+<div id="dynamicSummary"></div>
+            </div>
+            <a href="app.html" class="ob-next-btn" style="display:inline-flex;width:100%;justify-content:center;font-size:16px;padding:16px;text-decoration:none">
+              Open Huddle Workspace →
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";analytics._cdn="https://cdn.segment.com";analytics.SNIPPET_VERSION="5.2.0";
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+    }}();
+  </script>
+  <script src="segment.js"></script>
+  <script>
+    const user = JSON.parse(sessionStorage.getItem('huddle_user') || '{"id":"usr_demo","name":"John Smith","email":"john@acme.com","role":"admin"}');
+    const wsId  = 'ws_' + Math.random().toString(36).substr(2,8);
+    let invites = [];
+    let channels = ['general','random'];
+    let selectedChType = 'public';
+    let currentStep = 1;
+    let totalEvents = 0;
+
+    HuddleAnalytics.init();
+    HuddleAnalytics.page('Onboarding');
+    window.addEventListener('huddle:event', handleEvent);
+
+    // Pre-fill fields from signup data
+    (function prefillFromSignup() {
+      if (!user) return;
+      // Step 1 — workspace name from company
+      const wsNameEl = document.getElementById('workspaceName');
+      if (wsNameEl && user.company) {
+        wsNameEl.value = user.company;
+        // Auto-gen URL slug
+        const urlEl = document.getElementById('workspaceUrl');
+        if (urlEl) urlEl.value = user.company.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      }
+      // Step 4 — display name from signup name
+      const displayEl = document.getElementById('displayName');
+      if (displayEl && user.name) {
+        displayEl.value = user.name;
+        const bigAv = document.getElementById('profileBigAv');
+        const prevName = document.getElementById('profilePreviewName');
+        if (bigAv) bigAv.textContent = user.name.charAt(0).toUpperCase();
+        if (prevName) prevName.textContent = user.name;
+      }
+      // Step 4 — workspace preview
+      const prevWs = document.getElementById('profilePreviewWs');
+      if (prevWs && user.company) prevWs.textContent = user.company;
+      // Step 1 — workspace URL live sync
+      const wsInput = document.getElementById('workspaceName');
+      if (wsInput) {
+        wsInput.addEventListener('input', function() {
+          const slug = this.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+          const urlEl = document.getElementById('workspaceUrl');
+          if (urlEl) urlEl.value = slug;
+          const prevWsEl = document.getElementById('profilePreviewWs');
+          if (prevWsEl) prevWsEl.textContent = this.value || 'Your Workspace';
+        });
+      }
+    })();
+
+    function handleEvent(e) {
+      totalEvents++;
+      document.getElementById('eventCountBadge').textContent = totalEvents + ' event' + (totalEvents !== 1 ? 's' : '');
+      addSegEvent(e.detail);
+    }
+
+    function goToStep(n) {
+      // Hide all panels
+      document.querySelectorAll('.ob-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.ob-step-row').forEach(r => r.classList.remove('active'));
+
+      // Show panel
+      const panel = document.getElementById('panel' + n) || document.getElementById('panelSuccess');
+      if (panel) panel.classList.add('active');
+
+      // Activate step row
+      const sr = document.getElementById('sr' + n);
+      if (sr) sr.classList.add('active');
+
+      // Update progress
+      const pct = n <= 5 ? (n / 5 * 100) : 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('stepLabel').textContent = n <= 5 ? `Step ${n} / 5` : 'Complete! ';
+      currentStep = n;
+    }
+
+    function markDone(n) {
+      const sr = document.getElementById('sr' + n);
+      const sn = document.getElementById('sn' + n);
+      if (sr) { sr.classList.remove('active'); sr.classList.add('done'); }
+      if (sn) sn.textContent = '';
+    }
+
+    function nextStep(from) {
+      const wsName = document.getElementById('workspaceName')?.value || 'Acme Corp';
+
+      if (from === 1) {
+        HuddleAnalytics.workspaceCreated({ workspace_id: wsId, workspace_name: wsName, workspace_url: document.getElementById('workspaceUrl')?.value, created_by: user.id, industry: document.getElementById('industry')?.value });
+        HuddleAnalytics.onboardingStepCompleted({ user_id: user.id, workspace_id: wsId, step: 1, step_name: 'workspace_setup' });
+        const wsIndustry = document.getElementById('industry')?.value || null;
+        sessionStorage.setItem('huddle_workspace', JSON.stringify({ id: wsId, name: wsName, industry: wsIndustry, members: 0, channels_list: [], members_list: [], messages: 0, plan: 'free' }));
+        // Update user with workspace_id
+        const updatedUser = { ...user, workspace_id: wsId, workspace_name: wsName };
+        sessionStorage.setItem('huddle_user', JSON.stringify(updatedUser));
+        showToast('Workspace Created', `${wsName} · Workspace is ready`, 'success', '⚡');
+      } else if (from === 2) {
+        invites.forEach(em => HuddleAnalytics.inviteSent({ workspace_id: wsId, invited_by: user.id, invitee_email: em, total_invites_sent: invites.length }));
+        HuddleAnalytics.onboardingStepCompleted({ user_id: user.id, workspace_id: wsId, step: 2, step_name: 'invite_team' });
+        showToast('Invites Sent', `${invites.length} invite${invites.length !== 1 ? 's' : ''} invite(s) sent — ${invites.length}`, invites.length ? 'success' : 'info', '📧');
+      } else if (from === 3) {
+        HuddleAnalytics.onboardingStepCompleted({ user_id: user.id, workspace_id: wsId, step: 3, step_name: 'create_channels' });
+        showToast('Channels Ready', `${channels.length} channels created · channels ready`, 'success', '');
+      } else if (from === 4) {
+        const jobTitle    = document.getElementById('jobTitle').value;
+        const timezone    = document.getElementById('timezone').value;
+        const language    = document.getElementById('language').value;
+        const curFocus    = document.getElementById('currentFocus').value;
+        const displayName = document.getElementById('displayName').value;
+        const fields = ['name', jobTitle ? 'title' : null, 'timezone', 'language', curFocus ? 'focus' : null].filter(Boolean);
+        const pct = Math.round((fields.length / 5) * 100);
+        // Update user in sessionStorage with profile traits
+        const profileUser = { ...user, name: displayName || user.name, job_title: jobTitle, timezone, preferred_language: language, current_focus: curFocus };
+        sessionStorage.setItem('huddle_user', JSON.stringify(profileUser));
+        // Fire identify() so traits land in Segment unified profile
+        HuddleAnalytics.profileUpdated({ job_title: jobTitle, timezone, language, current_focus: curFocus, completion_pct: pct });
+        HuddleAnalytics.profileCompleted({ user_id: user.id, workspace_id: wsId, fields_filled: fields, completion_pct: pct });
+        HuddleAnalytics.onboardingStepCompleted({ user_id: user.id, workspace_id: wsId, step: 4, step_name: 'profile_completed' });
+        showToast('Profile saved', 'Your profile has been updated', 'success');
+      }
+
+      markDone(from);
+      goToStep(from + 1);
+    }
+
+    function sendFirstMessage() {
+      HuddleAnalytics.firstMessageSent({ user_id: user.id, workspace_id: wsId, channel_id: 'ch_general' });
+      HuddleAnalytics.onboardingStepCompleted({ user_id: user.id, workspace_id: wsId, step: 5, step_name: 'first_message' });
+      markDone(5);
+      // Build dynamic summary
+      const wsName = document.getElementById('workspaceName')?.value || 'your workspace';
+      const channelCount = channels.length;
+      const inviteCount  = invites.length;
+      const summaryRows = [
+        { text: 'Workspace "' + wsName + '" created', done: true },
+        { text: inviteCount > 0 ? inviteCount + ' teammate' + (inviteCount>1?'s':'') + ' invited (' + invites.join(', ') + ')' : 'No invites sent — you can invite later', done: inviteCount > 0 },
+        { text: channelCount + ' channel' + (channelCount>1?'s':'') + ' created (' + channels.slice(0,3).join(', ') + (channels.length>3?'...':'') + ')', done: true },
+        { text: 'Profile completed', done: true },
+        { text: 'First message sent', done: true },
+      ];
+      const summaryEl = document.getElementById('dynamicSummary');
+      if (summaryEl) {
+        summaryEl.innerHTML = summaryRows.map(r =>
+          '<div class="summary-row"><span style="color:' + (r.done ? 'var(--success)' : 'var(--text-4)') + '">' + (r.done ? 'ok' : 'skip') + '</span> ' + r.text + '</div>'
+        ).join('');
+      }
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('stepLabel').textContent = 'Complete!';
+      document.querySelectorAll('.ob-step-row').forEach(r => { r.classList.add('done'); r.classList.remove('active'); });
+      document.querySelectorAll('.ob-step-num').forEach(n => n.textContent = 'ok');
+      document.getElementById('panel5').classList.remove('active');
+      document.getElementById('panelSuccess').classList.add('active');
+      showToast('Setup complete', 'Your workspace is ready', 'success');
+    }
+
+    function addInvite() {
+      const input = document.getElementById('inviteInput');
+      const email = input.value.trim();
+      if (!email || !email.includes('@') || invites.includes(email)) return;
+      invites.push(email);
+      const list = document.getElementById('inviteList');
+      const chip = document.createElement('div');
+      chip.className = 'invite-chip';
+      const initials = email.charAt(0).toUpperCase();
+      chip.innerHTML = `
+        <div class="invite-chip-av">${initials}</div>
+        <span class="invite-chip-email">${email}</span>
+        <span class="invite-chip-status">Pending</span>
+        <button class="invite-chip-remove" onclick="removeInvite(this,'${email}')">×</button>
+      `;
+      list.appendChild(chip);
+      input.value = '';
+    }
+
+    function removeInvite(btn, email) {
+      invites = invites.filter(e => e !== email);
+      btn.parentElement.remove();
+    }
+
+    function setChType(type) {
+      selectedChType = type;
+      document.getElementById('chTypePublic').classList.toggle('selected', type === 'public');
+      document.getElementById('chTypePrivate').classList.toggle('selected', type === 'private');
+    }
+
+    function addChannel() {
+      const input = document.getElementById('channelInput');
+      const name = input.value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      if (!name) return;
+      channels.push(name);
+
+      HuddleAnalytics.channelCreated({ user_id: user.id, workspace_id: wsId, channel_id: 'ch_'+name, channel_name: name, channel_type: selectedChType });
+
+      const list = document.getElementById('channelList');
+      const chip = document.createElement('div');
+      chip.className = 'channel-chip';
+      const isPrivate = selectedChType === 'private';
+      chip.innerHTML = `
+        <div class="ch-icon-pill ${isPrivate ? 'private' : ''}">${isPrivate ? '🔒' : '#'}</div>
+        <div style="flex:1"><div class="ch-name-text">${isPrivate ? '🔒' : '#'} ${name}</div></div>
+        <div class="ch-type-label">${isPrivate ? 'Private' : 'Public'}</div>
+      `;
+      list.appendChild(chip);
+      input.value = '';
+
+      if (isPrivate && HuddleAnalytics._privateChannelCount >= 3) {
+        document.getElementById('misuseWarning').style.display = 'block';
+      }
+    }
+
+    document.getElementById('inviteInput').addEventListener('keypress', e => { if (e.key === 'Enter') addInvite(); });
+    document.getElementById('channelInput').addEventListener('keypress', e => { if (e.key === 'Enter') addChannel(); });
+  </script>
+</body>
+</html>

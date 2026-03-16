@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account — Huddle</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="responsive.css"/>
+  <style>
+    body { min-height:100vh; display:flex; overflow:hidden; }
+
+    /* LEFT PANEL */
+    .auth-left {
+      width: 520px; flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border-2);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .auth-left-header {
+      padding: 32px 48px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .auth-brand { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; }
+    .auth-brand-logo { width:32px; height:32px; background:var(--primary); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; box-shadow:0 4px 16px rgba(123,97,255,0.4); }
+    .auth-form-wrap { padding: 48px 48px 48px; flex:1; }
+    .auth-title { font-size: 30px; font-weight: 800; letter-spacing:-1.2px; margin-bottom:6px; }
+    .auth-subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 36px; line-height:1.6; }
+
+    .input-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+    .btn-auth-submit {
+      width:100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--r);
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: var(--t);
+      margin-top: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-auth-submit:hover { background:var(--primary-2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(123,97,255,0.45); }
+    .btn-auth-submit:active { transform:translateY(0); }
+    .btn-auth-submit.loading { opacity:0.7; pointer-events:none; }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 24px 0;
+      font-size: 12px; color: var(--text-4);
+    }
+    .auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border-2); }
+
+    .btn-social {
+      width:100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r);
+      padding: 13px;
+      font-size: 14px; font-weight: 600;
+      font-family: var(--font); color: var(--text-2);
+      cursor: pointer; transition: var(--t);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .btn-social:hover { border-color:var(--border-3); color:var(--text); background:var(--surface-3); }
+
+    .auth-footer-text { text-align:center; font-size:13px; color:var(--text-4); margin-top:24px; }
+    .auth-footer-text a { color:var(--primary-2); font-weight:600; }
+    .auth-footer-text a:hover { text-decoration:underline; }
+
+    .terms-text { font-size:11px; color:var(--text-4); text-align:center; margin-top:16px; line-height:1.7; }
+    .terms-text a { color:var(--text-3); }
+
+    /* Password strength */
+    .pw-strength { margin-top: 8px; }
+    .pw-strength-bar { display:flex; gap:4px; margin-bottom:5px; }
+    .pw-seg { flex:1; height:3px; border-radius:999px; background:var(--border-2); transition:background 0.3s; }
+    .pw-seg.weak   { background:var(--danger); }
+    .pw-seg.medium { background:var(--warning); }
+    .pw-seg.strong { background:var(--success); }
+    .pw-label { font-size:11px; color:var(--text-4); }
+
+    /* RIGHT PANEL */
+    .auth-right {
+      flex: 1;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px;
+    }
+    .auth-right-grid {
+      position:absolute; inset:0;
+      background-image: linear-gradient(rgba(123,97,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,97,255,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+    .auth-right-orb {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:600px; height:600px;
+      background: radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .auth-right-content { position:relative; z-index:2; max-width:440px; }
+    .benefits-title { font-size:26px; font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
+    .benefits-subtitle { font-size:14px; color:var(--text-3); margin-bottom:40px; line-height:1.7; }
+    .benefit-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r);
+      margin-bottom: 12px;
+      transition: var(--t);
+    }
+    .benefit-item:hover { border-color:rgba(123,97,255,0.3); transform:translateX(4px); }
+    .benefit-icon {
+      width:44px; height:44px; border-radius:var(--r-sm);
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; flex-shrink:0;
+    }
+    .benefit-text h5 { font-size:14px; font-weight:700; margin-bottom:4px; }
+    .benefit-text p { font-size:12px; color:var(--text-3); line-height:1.6; }
+    .auth-right-stats {
+      display: grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      margin-top: 28px;
+    }
+    .auth-stat {
+      background: var(--surface); border: 1px solid var(--border-2);
+      border-radius: var(--r); padding:16px; text-align:center;
+    }
+    .auth-stat-num { font-size:24px; font-weight:800; letter-spacing:-1px; color:var(--primary-2); }
+    .auth-stat-label { font-size:11px; color:var(--text-4); margin-top:3px; font-weight:500; }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT: FORM -->
+  <div class="auth-left">
+    <div class="auth-left-header">
+      <a href="index.html" class="auth-brand">
+        <div class="auth-brand-logo">⬡</div>
+        Huddle
+      </a>
+      <a href="login.html" class="btn btn-ghost btn-sm">Sign in instead →</a>
+    </div>
+    <div class="auth-form-wrap">
+      <h1 class="auth-title">Create your<br/>account</h1>
+      <p class="auth-subtitle">Start collaborating in 2 minutes. Free forever for small teams.</p>
+
+      <button class="btn-social">
+        <span>G</span> Continue with Google
+      </button>
+      <button class="btn-social">
+        <span>🔷</span> Continue with Microsoft
+      </button>
+
+      <div class="auth-divider">or sign up with email</div>
+
+      <form id="signupForm">
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input type="text" class="input" id="firstName" placeholder="John" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input type="text" class="input" id="lastName" placeholder="Smith" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Work email</label>
+          <input type="email" class="input" id="email" placeholder="john@company.com" required/>
+          <div class="form-hint">Use your company email for the best experience.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company / Team name</label>
+          <input type="text" class="input" id="company" placeholder="Acme Corp" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="input" id="password" placeholder="Min. 8 characters" required oninput="checkPwStrength(this.value)"/>
+          <div class="pw-strength">
+            <div class="pw-strength-bar">
+              <div class="pw-seg" id="pw1"></div>
+              <div class="pw-seg" id="pw2"></div>
+              <div class="pw-seg" id="pw3"></div>
+              <div class="pw-seg" id="pw4"></div>
+            </div>
+            <div class="pw-label" id="pwLabel">Enter a password</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team size</label>
+          <select class="input" id="teamSize">
+            <option value="">Select team size</option>
+            <option value="1-5">Just me (1)</option>
+            <option value="2-10">Small team (2–10)</option>
+            <option value="11-50">Growing team (11–50)</option>
+            <option value="51-200">Mid-size (51–200)</option>
+            <option value="200+">Enterprise (200+)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-auth-submit" id="submitBtn">
+          <span id="submitLabel">Create free account →</span>
+        </button>
+      </form>
+
+      <p class="terms-text">
+        By creating an account you agree to our
+        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        We'll never spam you or sell your data.
+      </p>
+      <p class="auth-footer-text">
+        Already have an account? <a href="login.html">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- RIGHT: BENEFITS -->
+  <div class="auth-right">
+    <div class="auth-right-grid"></div>
+    <div class="auth-right-orb"></div>
+    <div class="auth-right-content">
+      <h2 class="benefits-title">Everything your<br/><span class="gradient-text">team needs to thrive.</span></h2>
+      <p class="benefits-subtitle">Huddle is more than a chat app — it's where your team communicates, collaborates, and gets things done.</p>
+
+      <div class="benefit-item">
+        <div class="benefit-icon" style="background:var(--primary-dim)">🚀</div>
+        <div class="benefit-text">
+          <h5>Smart Onboarding Tracking</h5>
+          <p>See who is active, manage roles, and keep your workspace organised as your team grows.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon" style="background:var(--success-dim)">📈</div>
+        <div class="benefit-text">
+          <h5>Growth-Triggered Outreach</h5>
+          <p>Upgrade seamlessly as your team grows. Our plans scale with you — no disruption, no migration needed.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon" style="background:var(--warning-dim)">⚠️</div>
+        <div class="benefit-text">
+          <h5>Feature Misuse Detection</h5>
+          <p>Identify users who need guidance before they get frustrated. Proactive education, not reactive support.</p>
+        </div>
+      </div>
+
+      <div class="auth-right-stats">
+        <div class="auth-stat">
+          <div class="auth-stat-num">2min</div>
+          <div class="auth-stat-label">Avg. setup time</div>
+        </div>
+        <div class="auth-stat">
+          <div class="auth-stat-num">Free</div>
+          <div class="auth-stat-label">Forever for teams</div>
+        </div>
+        <div class="auth-stat">
+          <div class="auth-stat-num">4.9★</div>
+          <div class="auth-stat-label">User rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";analytics._cdn="https://cdn.segment.com";analytics.SNIPPET_VERSION="5.2.0";
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+    }}();
+  </script>
+  <script src="segment.js"></script>
+  <script>
+    window.addEventListener('huddle:event', e => addSegEvent(e.detail));
+    HuddleAnalytics.page('Signup Page');
+
+    function checkPwStrength(pw) {
+      const segs = [document.getElementById('pw1'),document.getElementById('pw2'),document.getElementById('pw3'),document.getElementById('pw4')];
+      const label = document.getElementById('pwLabel');
+      segs.forEach(s => s.className = 'pw-seg');
+      if (!pw) { label.textContent = 'Enter a password'; return; }
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+      const labels = { weak:'Weak', medium:'Fair', strong: score === 4 ? 'Very strong' : 'Strong' };
+      for (let i = 0; i < score; i++) segs[i].classList.add(cls);
+      label.textContent = labels[cls] || '';
+      label.style.color = cls === 'weak' ? 'var(--danger)' : cls === 'medium' ? 'var(--warning)' : 'var(--success)';
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const label = document.getElementById('submitLabel');
+      btn.classList.add('loading');
+      label.textContent = 'Creating account...';
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName  = document.getElementById('lastName').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const company   = document.getElementById('company').value.trim();
+      const teamSize  = document.getElementById('teamSize').value;
+
+      const userId = 'usr_' + Math.random().toString(36).substr(2, 8);
+      const user = { id: userId, name: `${firstName} ${lastName}`, email, company, role: 'admin', plan: 'free', team_size: teamSize, created_at: new Date().toISOString() };
+      sessionStorage.setItem('huddle_user', JSON.stringify(user));
+
+      HuddleAnalytics.identify(user);
+      HuddleAnalytics.userSignedUp({ user_id: userId, email, name: user.name, company, signup_source: 'organic' });
+
+      showToast('Account created', 'Welcome to Huddle! Setting up your workspace...', 'success');
+
+      setTimeout(() => { window.location.href = 'onboarding.html'; }, 1400);
+    });
+  </script>
+</body>
+</html>

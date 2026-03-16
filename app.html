@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Huddle</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="responsive.css"/>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; font-family: 'Poppins', sans-serif; }
+
+    .topbar { height: 46px; flex-shrink: 0; background: var(--bg); border-bottom: 1px solid var(--border-2); display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+    .topbar-brand-logo { width: 26px; height: 26px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; box-shadow: 0 2px 8px rgba(123,97,255,0.4); }
+    .topbar-nav { display: flex; gap: 2px; }
+    .topbar-nav-btn { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-4); cursor: pointer; transition: var(--t); border: none; background: none; }
+    .topbar-nav-btn:hover { background: var(--surface); color: var(--text-2); }
+    .topbar-search { flex: 1; max-width: 420px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border-2); border-radius: 8px; padding: 6px 14px; font-size: 12px; color: var(--text-4); cursor: pointer; transition: var(--t); font-family: 'Poppins', sans-serif; }
+    .topbar-search:hover { border-color: var(--border-3); color: var(--text-3); }
+    .search-kbd { margin-left: auto; font-size: 10px; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--text-4); }
+    .topbar-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .topbar-icon-btn { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-3); cursor: pointer; transition: var(--t); border: none; background: none; font-family: 'Poppins', sans-serif; }
+    .topbar-icon-btn:hover { background: var(--surface); color: var(--text); }
+    .topbar-user-av { width: 28px; height: 28px; border-radius: 8px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; border: none; box-shadow: 0 2px 8px rgba(123,97,255,0.35); }
+
+    .app-shell { flex: 1; display: flex; overflow: hidden; }
+
+    .ws-bar { width: 54px; flex-shrink: 0; background: #050508; border-right: 1px solid var(--border-2); display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 5px; }
+    .ws-btn { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--t); flex-shrink: 0; position: relative; }
+    .ws-btn-logo { background: var(--primary); font-size: 15px; font-weight: 800; color: #fff; box-shadow: 0 3px 12px rgba(123,97,255,0.5); }
+    .ws-btn-icon { background: var(--surface); border: 1px solid var(--border-2); font-size: 13px; color: var(--text-4); }
+    .ws-btn-icon:hover { background: var(--surface-2); color: var(--text-3); }
+    .ws-sep { width: 26px; height: 1px; background: var(--border-2); margin: 3px 0; }
+    .ws-tooltip { position: absolute; left: 48px; top: 50%; transform: translateY(-50%); background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 999; font-family: 'Poppins', sans-serif; }
+    .ws-btn:hover .ws-tooltip { opacity: 1; }
+
+    .sidebar { width: 244px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--border-2); display: flex; flex-direction: column; overflow: hidden; }
+    .sidebar-top { padding: 12px 14px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-ws-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .sidebar-ws-name { font-size: 14px; font-weight: 800; letter-spacing: -0.3px; }
+    .sidebar-plan-tag { font-size: 9px; font-weight: 700; background: var(--surface-2); border: 1px solid var(--border-2); color: var(--text-4); padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-status-chip { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; cursor: pointer; transition: var(--t); }
+    .user-status-chip:hover { border-color: var(--border-2); }
+    .usc-av { width: 22px; height: 22px; border-radius: 6px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .usc-name { font-size: 12px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .usc-online { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--success); }
+
+    .sidebar-body { flex: 1; overflow-y: auto; padding: 6px; }
+    .sb-section { margin-bottom: 2px; }
+    .sb-section-hdr { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+    .sb-section-hdr:hover { background: var(--surface); }
+    .sb-sec-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-4); }
+    .sb-sec-add { font-size: 16px; color: var(--text-4); line-height: 1; transition: var(--t); padding: 0; border: none; background: none; cursor: pointer; }
+    .sb-sec-add:hover { color: var(--primary-2); }
+
+    .ch-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 7px; cursor: pointer; font-size: 13px; color: var(--text-3); transition: var(--t); margin-bottom: 1px; }
+    .ch-item:hover { background: var(--surface); color: var(--text-2); }
+    .ch-item.active { background: var(--primary-dim); color: var(--primary-2); }
+    .ch-icon { font-size: 12px; flex-shrink: 0; width: 14px; text-align: center; }
+    .ch-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ch-unread { background: var(--primary); color: #fff; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+    .dm-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 7px; cursor: pointer; font-size: 13px; color: var(--text-3); transition: var(--t); margin-bottom: 1px; }
+    .dm-item:hover { background: var(--surface); color: var(--text-2); }
+    .dm-av-wrap { position: relative; flex-shrink: 0; }
+    .dm-av { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; }
+    .dm-status { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--sidebar); position: absolute; bottom: -1px; right: -1px; }
+    .dm-status.on { background: var(--success); }
+    .dm-status.aw { background: var(--warning); }
+    .dm-status.off { background: var(--text-4); }
+
+    /* Demo control bar */
+    .demo-bar { padding: 10px 14px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .demo-bar-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-4); margin-bottom: 8px; }
+    .demo-btns { display: flex; flex-direction: column; gap: 6px; }
+    .demo-btn { width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; transition: var(--t); border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text-3); text-align: left; display: flex; align-items: center; gap: 7px; }
+    .demo-btn:hover { border-color: var(--primary); color: var(--primary-2); background: var(--primary-dim); }
+    .demo-btn-count { margin-left: auto; font-size: 10px; background: var(--surface-3); padding: 1px 6px; border-radius: 3px; }
+    .mobile-demo-bar { display: none; flex-direction: row; gap: 6px; padding: 8px 10px; background: var(--surface); border-top: 1px solid var(--border-2); flex-shrink: 0; }
+    .mobile-demo-btn { flex: 1; padding: 8px 6px; border-radius: 8px; font-size: 11px; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text-3); transition: var(--t); }
+    .mobile-demo-btn:hover { border-color: var(--primary); color: var(--primary-2); background: var(--primary-dim); }
+    .mobile-demo-btn.danger { border-color: rgba(255,95,95,0.3); color: var(--danger); }
+
+    .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .chat-header { height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: var(--bg); border-bottom: 1px solid var(--border-2); }
+    .ch-hdr-left { display: flex; align-items: center; gap: 10px; }
+    .ch-hdr-icon { font-size: 14px; color: var(--text-3); }
+    .ch-hdr-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+    .ch-hdr-desc { font-size: 11px; color: var(--text-4); margin-top: 1px; }
+    .ch-hdr-right { display: flex; align-items: center; gap: 4px; }
+    .ch-hdr-btn { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-4); cursor: pointer; transition: var(--t); border: none; background: none; font-family: 'Poppins', sans-serif; }
+    .ch-hdr-btn:hover { background: var(--surface); color: var(--text-2); }
+    .ch-hdr-divider { width: 1px; height: 18px; background: var(--border-2); margin: 0 4px; }
+    .members-pill { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-3); padding: 0 8px; }
+
+    .messages-wrap { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 0; }
+    .date-divider { display: flex; align-items: center; gap: 12px; font-size: 11px; font-weight: 600; color: var(--text-4); margin: 20px 0 12px; letter-spacing: 0.3px; }
+    .date-divider::before, .date-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Empty state */
+    .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+    .empty-icon { width: 64px; height: 64px; border-radius: 18px; background: var(--primary-dim); border: 1px solid rgba(123,97,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; font-weight: 800; color: var(--primary-2); }
+    .empty-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .empty-desc { font-size: 13px; color: var(--text-3); line-height: 1.7; max-width: 320px; }
+
+    .msg { display: flex; gap: 12px; padding: 4px 8px; border-radius: 8px; margin-bottom: 2px; transition: background 0.1s; }
+    .msg:hover { background: rgba(255,255,255,0.02); }
+    .msg-av { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 2px; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+    .msg-name { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+    .msg-time { font-size: 11px; color: var(--text-4); }
+    .msg-text { font-size: 14px; color: var(--text-2); line-height: 1.65; word-break: break-word; }
+
+    .reactions { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+    .reaction { display: flex; align-items: center; gap: 4px; background: var(--surface); border: 1px solid var(--border-2); border-radius: 999px; padding: 3px 9px; font-size: 12px; cursor: pointer; transition: var(--t); }
+    .reaction:hover { border-color: var(--primary); background: var(--primary-dim); }
+
+    .typing-bar { height: 26px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 28px; font-size: 12px; color: var(--text-4); }
+
+    .input-area { padding: 0 16px 14px; flex-shrink: 0; }
+    .input-box { background: var(--surface-2); border: 1.5px solid var(--border-2); border-radius: 14px; overflow: hidden; transition: var(--t); }
+    .input-box:focus-within { border-color: var(--border-3); }
+    .input-toolbar { display: flex; align-items: center; gap: 2px; padding: 8px 12px 6px; border-bottom: 1px solid var(--border); }
+    .tb-btn { width: 28px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-4); cursor: pointer; transition: var(--t); border: none; background: none; font-family: 'Poppins', sans-serif; }
+    .tb-btn:hover { background: var(--surface-3); color: var(--text-2); }
+    .tb-sep { width: 1px; height: 16px; background: var(--border-2); margin: 0 3px; flex-shrink: 0; }
+    .input-body { display: flex; align-items: flex-end; gap: 8px; padding: 10px 14px; }
+    #msgInput { flex: 1; background: none; border: none; color: var(--text); font-size: 14px; font-family: 'Poppins', sans-serif; resize: none; max-height: 120px; line-height: 1.6; padding: 0; }
+    #msgInput::placeholder { color: var(--text-4); }
+    .send-btn { width: 34px; height: 34px; border-radius: 9px; background: var(--primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+    .send-btn:hover { background: var(--primary-2); transform: scale(1.1); box-shadow: 0 4px 16px rgba(123,97,255,0.45); }
+    .input-footer { display: flex; align-items: center; justify-content: space-between; padding: 0 14px 9px; font-size: 11px; color: var(--text-4); }
+
+    .right-panel { width: 296px; flex-shrink: 0; background: var(--sidebar); border-left: 1px solid var(--border-2); display: flex; flex-direction: column; overflow: hidden; transition: all 0.25s ease; }
+    .rp-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border-2); flex-shrink: 0; }
+    .rp-title { font-size: 14px; font-weight: 700; }
+    .rp-close { color: var(--text-4); font-size: 18px; cursor: pointer; border: none; background: none; transition: var(--t); }
+    .rp-close:hover { color: var(--text-2); }
+    .rp-tabs { display: flex; gap: 4px; padding: 8px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .rp-tab { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--t); border: none; background: none; color: var(--text-4); font-family: 'Poppins', sans-serif; }
+    .rp-tab.active { background: var(--primary-dim); color: var(--primary-2); }
+    .rp-tab:hover:not(.active) { background: var(--surface); color: var(--text-3); }
+    .rp-body { flex: 1; overflow-y: auto; padding: 12px; }
+
+    .members-section { margin-bottom: 18px; }
+    .members-sec-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-4); padding: 0 4px; margin-bottom: 6px; }
+    .member-row { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 8px; cursor: pointer; transition: var(--t); margin-bottom: 2px; }
+    .member-row:hover { background: var(--surface); }
+    .member-av-wrap { position: relative; flex-shrink: 0; }
+    .member-av { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
+    .member-status-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--sidebar); position: absolute; bottom: -1px; right: -1px; }
+    .member-status-dot.on { background: var(--success); }
+    .member-status-dot.aw { background: var(--warning); }
+    .member-status-dot.off { background: var(--text-4); }
+    .member-info { flex: 1; min-width: 0; }
+    .member-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .member-role { font-size: 11px; color: var(--text-4); margin-top: 1px; }
+
+    .cdp-event-item { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px; margin-bottom: 7px; animation: fadeUp 0.25s ease; transition: var(--t); cursor: default; }
+    .cdp-event-item:hover { border-color: rgba(123,97,255,0.3); }
+    .cdp-event-name { font-size: 12px; font-weight: 700; color: var(--primary-2); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+    .cdp-event-props { font-size: 11px; color: var(--text-3); line-height: 1.75; }
+    .cdp-key { color: var(--text-3); }
+    .cdp-val { color: var(--text-2); font-weight: 500; }
+    .cdp-event-time { font-size: 10px; color: var(--text-4); margin-top: 5px; }
+    .cdp-empty-state { text-align: center; padding: 32px 12px; font-size: 12px; color: var(--text-4); line-height: 1.7; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9000; animation: fadeIn 0.2s ease; }
+    .modal-overlay.hidden { display: none; }
+    .modal { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 20px; padding: 36px; width: 480px; box-shadow: var(--shadow-xl); animation: scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .modal-title { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 6px; }
+    .modal-desc { font-size: 13px; color: var(--text-3); margin-bottom: 24px; line-height: 1.6; }
+    .modal-type-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .modal-type-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border-2); background: var(--bg); color: var(--text-3); font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: var(--t); text-align: center; }
+    .modal-type-btn.selected { border-color: var(--primary); color: var(--primary-2); background: var(--primary-dim); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+    .misuse-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.25s ease; }
+    .misuse-overlay.hidden { display: none; }
+    .misuse-box { background: var(--surface-2); border: 1px solid var(--border-2); border-top: 3px solid var(--warning); border-radius: 20px; padding: 40px; width: 520px; box-shadow: var(--shadow-xl), 0 0 60px rgba(245,166,35,0.12); animation: scaleIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    .misuse-title { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 10px; }
+    .misuse-desc { font-size: 14px; color: var(--text-2); line-height: 1.75; margin-bottom: 20px; }
+    .misuse-events { background: var(--bg); border: 1px solid var(--border-2); border-radius: 10px; padding: 14px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 7px; }
+    .misuse-event-row { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+    .misuse-event-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .misuse-event-name { font-weight: 700; color: var(--primary-2); }
+    .misuse-event-detail { color: var(--text-3); }
+    .misuse-actions { display: flex; gap: 10px; }
+
+    .enterprise-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.25s ease; }
+    .enterprise-overlay.hidden { display: none; }
+    .enterprise-box { background: var(--surface-2); border: 1px solid var(--border-2); border-top: 3px solid var(--success); border-radius: 20px; padding: 40px; width: 520px; box-shadow: var(--shadow-xl), 0 0 60px rgba(35,209,139,0.1); animation: scaleIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    .enterprise-title { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 10px; }
+    .enterprise-desc { font-size: 14px; color: var(--text-2); line-height: 1.75; margin-bottom: 20px; }
+    .enterprise-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .ent-stat { background: var(--bg); border: 1px solid var(--border-2); border-radius: 10px; padding: 14px; text-align: center; }
+    .ent-stat-num { font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+    .ent-stat-label { font-size: 10px; color: var(--text-4); margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .enterprise-events { background: var(--bg); border: 1px solid var(--border-2); border-radius: 10px; padding: 14px; margin-bottom: 20px; }
+    .ent-events-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-4); margin-bottom: 10px; }
+    .ent-event-row { display: flex; align-items: center; gap: 9px; font-size: 12px; margin-bottom: 6px; }
+    .ent-event-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .enterprise-actions { display: flex; gap: 10px; }
+
+    /* UC3 Delete Workspace confirmation */
+    .delete-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.2s ease; }
+    .delete-overlay.hidden { display: none; }
+    .delete-box { background: var(--surface-2); border: 1px solid var(--border-2); border-top: 3px solid var(--danger); border-radius: 20px; padding: 40px; width: 460px; box-shadow: var(--shadow-xl); animation: scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .delete-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .delete-desc { font-size: 13px; color: var(--text-3); line-height: 1.7; margin-bottom: 20px; }
+    .delete-usage-summary { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 20px; }
+    .delete-usage-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-3); margin-bottom: 6px; }
+    .delete-usage-row:last-child { margin-bottom: 0; }
+    .delete-usage-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-4); flex-shrink: 0; }
+    .delete-actions { display: flex; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-logo">H</div>
+      Huddle
+    </div>
+    <div class="topbar-nav">
+      <button class="topbar-nav-btn">&#8592;</button>
+      <button class="topbar-nav-btn">&#8594;</button>
+    </div>
+    <div class="topbar-search">
+      <span style="font-size:12px;color:var(--text-4)">Search</span>
+      <span id="wsSearchLabel" style="color:var(--text-3)"></span>
+      <span class="search-kbd">Cmd+K</span>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-icon-btn" onclick="window.location.href='admin.html'" title="Admin">Settings</button>
+      <button class="topbar-icon-btn" id="rpToggleBtn" onclick="toggleRightPanel()">Members</button>
+      <button class="topbar-icon-btn">Alerts</button>
+      <div style="width:1px;height:18px;background:var(--border-2)"></div>
+      <button class="topbar-user-av" id="topUserAv">J</button>
+    </div>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- WORKSPACE BAR -->
+    <div class="ws-bar">
+      <div class="ws-btn ws-btn-logo" id="wsBarLogo" style="border-radius:13px">
+        A
+        <div class="ws-tooltip" id="wsBarTooltip">Workspace</div>
+      </div>
+      <div class="ws-sep"></div>
+      <div class="ws-btn ws-btn-icon on">
+        Ch
+        <div class="ws-tooltip">Channels</div>
+      </div>
+      <div class="ws-btn ws-btn-icon">
+        DM
+        <div class="ws-tooltip">Direct Messages</div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="ws-sep"></div>
+      <div class="ws-btn ws-btn-icon" onclick="window.location.href='admin.html'" title="Admin Dashboard">
+        Adm
+        <div class="ws-tooltip">Admin</div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-ws-row">
+          <span class="sidebar-ws-name" id="wsNameDisplay">Workspace</span>
+          <span class="sidebar-plan-tag" id="planTag">Free</span>
+        </div>
+        <div class="user-status-chip">
+          <div class="usc-av" id="sidebarAv">J</div>
+          <span class="usc-name" id="sidebarName">User</span>
+          <div class="usc-online"><div class="status-dot online"></div>Active</div>
+        </div>
+      </div>
+
+      <div class="sidebar-body">
+        <div class="sb-section">
+          <div class="sb-section-hdr">
+            <span class="sb-sec-label">Channels</span>
+            <button class="sb-sec-add" onclick="openChannelModal()" title="Add channel">+</button>
+          </div>
+          <div id="channelsEl"></div>
+        </div>
+
+        <div class="sb-section" style="margin-top:8px">
+          <div class="sb-section-hdr">
+            <span class="sb-sec-label">Direct Messages</span>
+            <button class="sb-sec-add">+</button>
+          </div>
+          <div id="dmsEl"></div>
+        </div>
+      </div>
+
+      <!-- Demo control panel -->
+      <div class="demo-bar">
+        <div class="demo-bar-label">Demo Controls</div>
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="addFiveUsers()">
+            + Add 5 Users
+            <span class="demo-btn-count" id="userCount">0 members</span>
+          </button>
+          <button class="demo-btn" onclick="addFiveChannels()">
+            + Add 5 Channels
+            <span class="demo-btn-count" id="channelCount">0 channels</span>
+          </button>
+          <button class="demo-btn" onclick="confirmDeleteWorkspace()" style="border-color:rgba(255,95,95,0.3);color:var(--danger)">
+            Delete Workspace
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="ch-hdr-left">
+          <span class="ch-hdr-icon" id="chatIcon">#</span>
+          <div>
+            <div class="ch-hdr-name" id="chatName">general</div>
+            <div class="ch-hdr-desc" id="chatDesc">Company-wide channel</div>
+          </div>
+        </div>
+        <div class="ch-hdr-right">
+          <div class="members-pill">Members: <span id="memberCount">0</span></div>
+          <div class="ch-hdr-divider"></div>
+          <button class="ch-hdr-btn" onclick="showRPTab('members')">Members</button>
+          <button class="ch-hdr-btn" onclick="showRPTab('cdp')">Events</button>
+        </div>
+      </div>
+
+      <div class="messages-wrap" id="messagesWrap">
+        <!-- Empty state shown on first load -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon" id="emptyIcon">H</div>
+          <div class="empty-title" id="emptyTitle">Welcome to your workspace</div>
+          <div class="empty-desc" id="emptyDesc">This is the beginning of your workspace. Send a message, create channels, or invite your team to get started.</div>
+        </div>
+      </div>
+
+      <div class="typing-bar" id="typingBar"></div>
+
+      <div class="input-area">
+        <div class="input-box">
+          <div class="input-toolbar">
+            <button class="tb-btn" title="Bold"><strong>B</strong></button>
+            <button class="tb-btn" title="Italic"><em>I</em></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" title="Link">Link</button>
+            <button class="tb-btn" title="Code">&lt;/&gt;</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" title="Mention">@</button>
+            <button class="tb-btn" title="Channel">#</button>
+          </div>
+          <div class="input-body">
+            <textarea id="msgInput" placeholder="Message #general" rows="1"></textarea>
+            <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <div class="input-footer">
+            <span><strong style="color:var(--text-3)">Enter</strong> to send</span>
+            <span id="charCount" style="color:var(--text-4)"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel" id="rightPanel">
+      <div class="rp-header">
+        <span class="rp-title" id="rpTitle">Members</span>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button class="rp-close" onclick="toggleRightPanel()">x</button>
+        </div>
+      </div>
+      <div class="rp-tabs">
+        <button class="rp-tab active" id="tabMembers" onclick="showRPTab('members')">Members</button>
+        <button class="rp-tab" id="tabCDP" onclick="showRPTab('cdp')">Events</button>
+      </div>
+      <div class="rp-body" id="rpBody">
+        <div id="membersView">
+          <div class="members-section">
+            <div class="members-sec-label">Online</div>
+            <div id="membersListEl">
+              <div style="padding:24px;text-align:center;font-size:12px;color:var(--text-4)">No members yet. Use the demo controls to add users.</div>
+            </div>
+          </div>
+        </div>
+        <div id="cdpView" style="display:none">
+          <div id="cdpEventsEl">
+            <div class="cdp-empty-state" id="cdpEmpty">
+              Interact with the workspace to see events appear here.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHANNEL MODAL -->
+  <div class="modal-overlay hidden" id="channelModal">
+    <div class="modal">
+      <div class="modal-title">Create a channel</div>
+      <div class="modal-desc">Channels keep conversations organized by topic or project.</div>
+      <div class="modal-type-row">
+        <button class="modal-type-btn selected" id="mtPublic" onclick="setModalType('public')">Public<br/><span style="font-size:11px;font-weight:400;color:var(--text-4)">Anyone can join</span></button>
+        <button class="modal-type-btn" id="mtPrivate" onclick="setModalType('private')">Private<br/><span style="font-size:11px;font-weight:400;color:var(--text-4)">Invite only</span></button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Channel name</label>
+        <input type="text" class="input" id="newChName" placeholder="e.g. team-updates, q4-launch..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description <span style="color:var(--text-4);font-weight:400">(optional)</span></label>
+        <input type="text" class="input" id="newChDesc" placeholder="What is this channel for?"/>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="createChannel()">Create Channel</button>
+        <button class="btn btn-ghost" onclick="closeChannelModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISUSE ALERT MODAL -->
+  <div class="misuse-overlay hidden" id="misuseModal">
+    <div class="misuse-box">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--warning);margin-bottom:12px">Pattern Detected</div>
+      <div class="misuse-title">Too many private channels</div>
+      <div class="misuse-desc" id="misuseDesc">You've created <strong id="misuseCount">5</strong> private channels. This pattern has been detected and logged. Threads are better for focused discussions within a channel.</div>
+      <div class="misuse-events">
+        <div class="misuse-event-row">
+          <div class="misuse-event-dot" style="background:var(--warning)"></div>
+          <span class="misuse-event-name">Misuse Pattern Detected</span>
+          <span class="misuse-event-detail">pattern_type: excess_private_channels</span>
+        </div>
+        <div class="misuse-event-row">
+          <div class="misuse-event-dot" style="background:var(--primary)"></div>
+          <span class="misuse-event-name">Awareness Message Sent</span>
+          <span class="misuse-event-detail">feature_highlighted: threads</span>
+        </div>
+      </div>
+      <div class="misuse-actions">
+        <button class="btn btn-primary" onclick="closeMisuseModal()">Got it</button>
+        <button class="btn btn-outline" onclick="closeMisuseModal()">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTERPRISE MODAL -->
+  <div class="enterprise-overlay hidden" id="enterpriseModal">
+    <div class="enterprise-box">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--success);margin-bottom:12px">Growth Alert</div>
+      <div class="enterprise-title">Your team is growing fast</div>
+      <div class="enterprise-desc">Your workspace has reached <strong id="entMemberCount">50</strong> members. This growth signal has been captured and an enterprise plan recommendation has been queued.</div>
+      <div class="enterprise-stats">
+        <div class="ent-stat"><div class="ent-stat-num col-success" id="entStatMembers">50</div><div class="ent-stat-label">Members</div></div>
+        <div class="ent-stat"><div class="ent-stat-num col-primary">+40%</div><div class="ent-stat-label">Growth</div></div>
+        <div class="ent-stat"><div class="ent-stat-num col-warning">Free</div><div class="ent-stat-label">Plan</div></div>
+      </div>
+      <div class="enterprise-events">
+        <div class="ent-events-title">Activity Summary</div>
+        <div class="ent-event-row">
+          <div class="ent-event-dot" style="background:var(--success)"></div>
+          <span style="font-weight:700;color:var(--primary-2)">Workspace Seat Count Updated</span>
+          <span style="color:var(--text-3)">new_count: <span id="entNewCount">50</span></span>
+        </div>
+        <div class="ent-event-row">
+          <div class="ent-event-dot" style="background:var(--success)"></div>
+          <span style="font-weight:700;color:var(--primary-2)">Trial Eligibility Reached</span>
+          <span style="color:var(--text-3)">plan_suggestion: free_30_day_trial</span>
+        </div>
+      </div>
+      <div class="enterprise-actions">
+        <button class="btn btn-success" onclick="closeEnterpriseModal()">View Plan Options</button>
+        <button class="btn btn-outline" onclick="closeEnterpriseModal()">Later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE WORKSPACE CONFIRMATION -->
+  <div class="delete-overlay hidden" id="deleteModal">
+    <div class="delete-box">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--danger);margin-bottom:12px">Destructive Action</div>
+      <div class="delete-title">Delete this workspace?</div>
+      <div class="delete-desc">This will permanently delete your workspace and all its data. This action cannot be undone.</div>
+      <div class="delete-usage-summary" id="deleteUsageSummary">
+        <div class="delete-usage-row"><div class="delete-usage-dot"></div><span id="deleteUsageMembers">0 members</span></div>
+        <div class="delete-usage-row"><div class="delete-usage-dot"></div><span id="deleteUsageChannels">0 channels</span></div>
+        <div class="delete-usage-row"><div class="delete-usage-dot"></div><span id="deleteUsageMsgs">0 messages sent</span></div>
+      </div>
+      <div class="delete-actions">
+        <button class="btn" style="background:var(--danger);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif" onclick="executeDelete()">Yes, delete workspace</button>
+        <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";analytics._cdn="https://cdn.segment.com";analytics.SNIPPET_VERSION="5.2.0";
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+    }}();
+  </script>
+  <script src="segment.js"></script>
+  <script>
+    /* ── STATE ──────────────────────────────── */
+    const user = JSON.parse(sessionStorage.getItem('huddle_user') || '{"id":"usr_demo01","name":"John Smith","email":"john@acme.com","role":"admin","plan":"free"}');
+    const workspace = JSON.parse(sessionStorage.getItem('huddle_workspace') || '{"id":"ws_new_' + Date.now() + '","name":"My Workspace","members":0,"channels":0,"messages":0,"plan":"free"}');
+
+    // Always start fresh from workspace state
+    let memberCount = parseInt(workspace.members) || 0;
+    let channelList = workspace.channels_list || [];
+    let msgCount = parseInt(workspace.messages) || 0;
+    let privateChannelCount = 0;
+    let currentChannel = channelList.length > 0 ? channelList[0].name : 'general';
+    let currentChannelType = 'public';
+    let selectedModalType = 'public';
+    let rpVisible = true;
+    let enterpriseTriggered = false;
+    const MEMBER_NAMES = ['Alex B.','Priya S.','Tom W.','Nina K.','Carlos R.','Amy J.','Lena M.','Dev P.','Sam H.','Rita K.','Omar F.','Zoe M.'];
+    const MEMBER_COLORS = ['#7B61FF','#23D18B','#F5A623','#FF5F5F','#38BDF8','#A78BFA','#EC4899','#10B981'];
+
+    /* ── INIT ───────────────────────────────── */
+    const initials = (user.name || 'J').charAt(0).toUpperCase();
+    document.getElementById('topUserAv').textContent = initials;
+    document.getElementById('sidebarAv').textContent = initials;
+    document.getElementById('sidebarName').textContent = user.name || 'User';
+    document.getElementById('wsNameDisplay').textContent = workspace.name || 'My Workspace';
+    document.getElementById('wsSearchLabel').textContent = workspace.name || '';
+    document.getElementById('wsBarLogo').textContent = (workspace.name || 'H').charAt(0).toUpperCase();
+    document.getElementById('wsBarLogo').innerHTML = (workspace.name || 'H').charAt(0).toUpperCase() + '<div class="ws-tooltip">' + (workspace.name || 'Workspace') + '</div>';
+    document.getElementById('wsBarTooltip').textContent = workspace.name || 'Workspace';
+    document.getElementById('memberCount').textContent = memberCount;
+    document.getElementById('userCount').textContent = memberCount + ' members';
+    document.getElementById('channelCount').textContent = channelList.length + ' channels';
+
+    // Restore channels from storage if any
+    if (channelList.length > 0) {
+      channelList.forEach(ch => renderChannelItem(ch.name, ch.type));
+      updateEmptyState();
+    }
+
+    // Restore members from storage
+    const storedMembers = workspace.members_list || [];
+    if (storedMembers.length > 0) {
+      const membersListEl = document.getElementById('membersListEl');
+      membersListEl.innerHTML = '';
+      storedMembers.forEach((m) => {
+        renderMemberRow(m.name, m.color);
+        renderDMItem(m.name, m.color);
+      });
+    }
+
+    document.title = (workspace.name || 'Huddle') + ' — Huddle';
+    if (!workspace.initial_members) { workspace.initial_members = memberCount; sessionStorage.setItem('huddle_workspace', JSON.stringify(workspace)); }
+    HuddleAnalytics.init();
+    HuddleAnalytics.page('App', { workspace_id: workspace.id });
+
+    /* ── EVENT LISTENERS ────────────────────── */
+    window.addEventListener('huddle:event', e => addCDPEventToPanel(e.detail));
+    window.addEventListener('huddle:misuse', e => openMisuseModal(e.detail.count));
+    window.addEventListener('huddle:enterprise', e => openEnterpriseModal(memberCount));
+
+    /* ── EMPTY STATE ────────────────────────── */
+    function updateEmptyState() {
+      const emptyState = document.getElementById('emptyState');
+      if (!emptyState) return;
+      const wsName = workspace.name || 'your workspace';
+      document.getElementById('emptyIcon').textContent = wsName.charAt(0).toUpperCase();
+      document.getElementById('emptyTitle').textContent = 'Welcome to ' + wsName;
+      if (channelList.length === 0) {
+        document.getElementById('emptyDesc').textContent = 'No channels yet. Use the demo controls on the left to add users and channels, or create a channel using the + button.';
+      } else {
+        document.getElementById('emptyDesc').textContent = 'Select a channel to start messaging.';
+      }
+    }
+    updateEmptyState();
+
+    /* ── CDP PANEL ──────────────────────────── */
+    function addCDPEventToPanel(entry) {
+      const el = document.getElementById('cdpEventsEl');
+      const empty = document.getElementById('cdpEmpty');
+      if (empty) empty.remove();
+      const dotColor = entry.dotType === 'warning' ? 'var(--warning)' : entry.dotType === 'danger' ? 'var(--danger)' : 'var(--primary)';
+      const propsHTML = Object.entries(entry.props).filter(([k]) => k !== 'timestamp').slice(0, 4)
+        .map(([k, v]) => '<span class="cdp-key">' + k + ':</span> <span class="cdp-val">' + (typeof v === 'object' ? JSON.stringify(v) : v) + '</span>').join('<br/>');
+      const card = document.createElement('div');
+      card.className = 'cdp-event-item';
+      card.innerHTML = '<div class="cdp-event-name"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';box-shadow:0 0 6px ' + dotColor + ';flex-shrink:0"></div>' + entry.name + '</div><div class="cdp-event-props">' + propsHTML + '</div><div class="cdp-event-time">' + entry.time + '</div>';
+      el.insertBefore(card, el.firstChild);
+    }
+
+    /* ── SEND MESSAGE ───────────────────────── */
+    function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const text = input.value.trim();
+      if (!text) return;
+      msgCount++;
+      saveWorkspaceState();
+
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const wrap = document.getElementById('messagesWrap');
+      const emptyState = document.getElementById('emptyState');
+      if (emptyState) emptyState.remove();
+
+      if (msgCount === 1) {
+        const divider = document.createElement('div');
+        divider.className = 'date-divider';
+        divider.textContent = 'Today';
+        wrap.appendChild(divider);
+      }
+
+      const msgEl = document.createElement('div');
+      msgEl.className = 'msg';
+      msgEl.style.animation = 'fadeUp 0.2s ease';
+      msgEl.innerHTML = '<div class="msg-av" style="background:var(--primary)">' + initials + '</div><div class="msg-body"><div class="msg-header"><span class="msg-name">' + (user.name || 'You') + '</span><span class="msg-time">' + now + '</span></div><div class="msg-text">' + text + '</div></div>';
+      wrap.appendChild(msgEl);
+      wrap.scrollTop = wrap.scrollHeight;
+      input.value = '';
+      document.getElementById('charCount').textContent = '';
+
+      if (msgCount === 1) {
+        HuddleAnalytics.firstMessageSent({ user_id: user.id, workspace_id: workspace.id, channel_id: 'ch_' + currentChannel });
+        showToast('First message sent', 'First message milestone reached', 'success');
+        showRPTab('cdp');
+      } else {
+        HuddleAnalytics.messageSent({ user_id: user.id, workspace_id: workspace.id, channel_id: 'ch_' + currentChannel, channel_type: currentChannelType, message_length: text.length });
+      }
+
+      const memberNames = (workspace.members_list || []).map(m => m.name);
+      const responders = memberNames.length > 0 ? memberNames : ['Sarah K.', 'James R.', 'Maya T.'];
+      const responder = responders[Math.floor(Math.random() * responders.length)];
+      const typingBar = document.getElementById('typingBar');
+      typingBar.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div> <span>' + responder + ' is typing...</span>';
+      setTimeout(() => { typingBar.innerHTML = ''; }, 2800);
+    }
+
+    /* ── CHANNEL MANAGEMENT ─────────────────── */
+    function renderChannelItem(name, type) {
+      const chList = document.getElementById('channelsEl');
+      const item = document.createElement('div');
+      item.className = 'ch-item' + (channelList.length === 1 ? ' active' : '');
+      item.dataset.ch = name;
+      item.dataset.type = type || 'public';
+      item.onclick = function() { switchChannel(this); };
+      item.innerHTML = '<span class="ch-icon">' + (type === 'private' ? 'L' : '#') + '</span><span class="ch-name">' + name + '</span>';
+      chList.appendChild(item);
+    }
+
+    function renderMemberRow(name, color) {
+      const membersListEl = document.getElementById('membersListEl');
+      const row = document.createElement('div');
+      row.className = 'member-row';
+      row.innerHTML = '<div class="member-av-wrap"><div class="member-av" style="background:' + color + '">' + name.charAt(0) + '</div><div class="member-status-dot on"></div></div><div class="member-info"><div class="member-name">' + name + '</div><div class="member-role">Team Member</div></div>';
+      membersListEl.appendChild(row);
+    }
+
+    function renderDMItem(name, color) {
+      const dmsEl = document.getElementById('dmsEl');
+      if (!dmsEl) return;
+      const item = document.createElement('div');
+      item.className = 'dm-item';
+      item.innerHTML = '<div class="dm-av-wrap"><div class="dm-av" style="background:' + color + '">' + name.charAt(0) + '</div><div class="dm-status on"></div></div><span class="ch-name">' + name + '</span>';
+      dmsEl.appendChild(item);
+    }
+
+    function switchChannel(el) {
+      document.querySelectorAll('.ch-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentChannel = el.dataset.ch;
+      currentChannelType = el.dataset.type;
+      document.getElementById('chatIcon').textContent = currentChannelType === 'private' ? 'L' : '#';
+      document.getElementById('chatName').textContent = currentChannel;
+      document.getElementById('chatDesc').textContent = currentChannelType === 'private' ? 'Private channel' : '#' + currentChannel + ' channel';
+      document.getElementById('msgInput').placeholder = 'Message #' + currentChannel;
+      el.querySelector('.ch-unread')?.remove();
+      const emptyState = document.getElementById('emptyState');
+      if (emptyState) emptyState.remove();
+      HuddleAnalytics.channelViewed({ user_id: user.id, workspace_id: workspace.id, channel_id: 'ch_' + currentChannel, channel_name: currentChannel, channel_type: currentChannelType });
+    }
+
+    /* ── DEMO CONTROLS ──────────────────────── */
+    function addFiveUsers() {
+      const membersListEl = document.getElementById('membersListEl');
+      if (membersListEl.querySelector('[style*="No members"]') || membersListEl.querySelector('div[style*="color:var(--text-4)"]')) {
+        membersListEl.innerHTML = '';
+      }
+
+      for (let i = 0; i < 5; i++) {
+        memberCount++;
+        const idx = (memberCount - 1) % MEMBER_NAMES.length;
+        const name = MEMBER_NAMES[idx];
+        const color = MEMBER_COLORS[idx % MEMBER_COLORS.length];
+        const email = name.toLowerCase().replace(/[\s.]/g, '') + memberCount + '@' + (workspace.name || 'workspace').toLowerCase().replace(/\s/g, '') + '.com';
+
+        renderMemberRow(name, color);
+        renderDMItem(name, color);
+
+        if (!workspace.members_list) workspace.members_list = [];
+        workspace.members_list.push({ name, color });
+
+        HuddleAnalytics.memberAdded({ workspace_id: workspace.id, added_by: user.id, new_member_email: email, total_members: memberCount, plan: workspace.plan || 'free' });
+        HuddleAnalytics.seatCountUpdated({ workspace_id: workspace.id, previous_count: memberCount - 1, new_count: memberCount });
+
+        // UC1 handled automatically inside segment.js _checkGrowth
+      }
+
+      workspace.members = memberCount;
+      saveWorkspaceState();
+      document.getElementById('memberCount').textContent = memberCount;
+      document.getElementById('userCount').textContent = memberCount + ' members';
+      const muc = document.getElementById('mobileUserCount'); if (muc) muc.textContent = memberCount;
+      showToast('5 users added', '5 users joined the workspace — total: ' + memberCount, 'info');
+      showRPTab('cdp');
+    }
+
+    function addFiveChannels() {
+      const channelNames = ['marketing','engineering','design','random','product','sales','support','devops','analytics','legal'];
+      for (let i = 0; i < 5; i++) {
+        const name = channelNames[(channelList.length) % channelNames.length];
+        if (channelList.find(c => c.name === name)) continue;
+        channelList.push({ name, type: 'public' });
+        renderChannelItem(name, 'public');
+        HuddleAnalytics.channelCreated({ user_id: user.id, workspace_id: workspace.id, channel_id: 'ch_' + name, channel_name: name, channel_type: 'public' });
+        setTimeout(() => addWelcomeMessage(name, 'public'), 50 * (i+1));
+      }
+      workspace.channels_list = channelList;
+      saveWorkspaceState();
+      document.getElementById('channelCount').textContent = channelList.length + ' channels';
+      const mcc = document.getElementById('mobileChannelCount'); if (mcc) mcc.textContent = channelList.length;
+      updateEmptyState();
+
+      // Auto switch to first channel if none active
+      const activeItem = document.querySelector('.ch-item.active');
+      if (!activeItem) {
+        const firstItem = document.querySelector('.ch-item');
+        if (firstItem) switchChannel(firstItem);
+      }
+
+      showToast('5 channels added', '5 channels created — total: ' + channelList.length, 'info');
+      showRPTab('cdp');
+    }
+
+    /* ── SAVE STATE ─────────────────────────── */
+    function saveWorkspaceState() {
+      workspace.members = memberCount;
+      workspace.channels_list = channelList;
+      workspace.messages = msgCount;
+      sessionStorage.setItem('huddle_workspace', JSON.stringify(workspace));
+    }
+
+    /* ── CHANNEL MODAL ──────────────────────── */
+    function openChannelModal() { document.getElementById('channelModal').classList.remove('hidden'); setTimeout(() => document.getElementById('newChName').focus(), 100); }
+    function closeChannelModal() { document.getElementById('channelModal').classList.add('hidden'); document.getElementById('newChName').value = ''; document.getElementById('newChDesc').value = ''; }
+    function setModalType(t) {
+      selectedModalType = t;
+      document.getElementById('mtPublic').classList.toggle('selected', t === 'public');
+      document.getElementById('mtPrivate').classList.toggle('selected', t === 'private');
+    }
+    function createChannel() {
+      const name = document.getElementById('newChName').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      if (!name) return;
+      if (channelList.find(c => c.name === name)) { showToast('Channel exists', 'A channel with that name already exists', 'warning'); return; }
+      const isPrivate = selectedModalType === 'private';
+
+      channelList.push({ name, type: selectedModalType });
+      renderChannelItem(name, selectedModalType);
+      workspace.channels_list = channelList;
+      saveWorkspaceState();
+      document.getElementById('channelCount').textContent = channelList.length + ' channels';
+      const mcc = document.getElementById('mobileChannelCount'); if (mcc) mcc.textContent = channelList.length;
+
+      if (isPrivate) privateChannelCount++;
+
+      HuddleAnalytics.channelCreated({ user_id: user.id, workspace_id: workspace.id, channel_id: 'ch_' + name, channel_name: name, channel_type: selectedModalType });
+      showToast('Channel created', '#' + name + ' (' + selectedModalType + ') — Channel Created event fired', 'info');
+      showRPTab('cdp');
+      closeChannelModal();
+
+      const newItem = document.querySelector('[data-ch="' + name + '"]');
+      if (newItem) switchChannel(newItem);
+    }
+
+    /* ── MISUSE MODAL ───────────────────────── */
+    function openMisuseModal(count) {
+      document.getElementById('misuseCount').textContent = count;
+      const privateNames = channelList.filter(c => c.type === 'private').map(c => '#' + c.name);
+      const desc = document.getElementById('misuseDesc');
+      if (desc) {
+        const nameStr = privateNames.length > 0 ? ' (' + privateNames.slice(0,3).join(', ') + (privateNames.length > 3 ? '...' : '') + ')' : '';
+        desc.innerHTML = 'You have created <strong>' + count + '</strong> private channels' + nameStr + '. Consider using threads for focused conversations within existing channels instead.';
+      }
+      document.getElementById('misuseModal').classList.remove('hidden');
+    }
+    function closeMisuseModal() { document.getElementById('misuseModal').classList.add('hidden'); }
+
+    /* ── ENTERPRISE MODAL ───────────────────── */
+    function openEnterpriseModal(count) {
+      document.getElementById('entMemberCount').textContent = count;
+      document.getElementById('entStatMembers').textContent = count;
+      document.getElementById('entNewCount').textContent = count;
+      // Compute real growth
+      const initial = parseInt(workspace.initial_members) || 1;
+      const growthPct = initial > 0 ? Math.min(Math.round(((count - initial) / initial) * 100), 999) : count * 100;
+      const growthEl = document.querySelector('#enterpriseModal .ent-stat-num.col-primary');
+      if (growthEl) growthEl.textContent = '+' + growthPct + '%';
+      document.getElementById('enterpriseModal').classList.remove('hidden');
+    }
+    function closeEnterpriseModal() { document.getElementById('enterpriseModal').classList.add('hidden'); }
+
+    /* ── DELETE WORKSPACE (UC3) ─────────────── */
+    function confirmDeleteWorkspace() {
+      document.getElementById('deleteUsageMembers').textContent = memberCount + ' member' + (memberCount !== 1 ? 's' : '');
+      document.getElementById('deleteUsageChannels').textContent = channelList.length + ' channel' + (channelList.length !== 1 ? 's' : '');
+      document.getElementById('deleteUsageMsgs').textContent = msgCount + ' message' + (msgCount !== 1 ? 's' : '') + ' sent';
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
+
+    function executeDelete() {
+      const hasUsage = (memberCount > 0 || channelList.length > 0 || msgCount > 0);
+      const wsName = workspace.name || 'My Workspace';
+
+      // UC3: Fire appropriate Segment event
+      if (!hasUsage) {
+        // No meaningful usage — fire re-engagement event
+        HuddleAnalytics.identify({
+          ...user,
+          workspace_deleted: true,
+          had_meaningful_usage: false,
+          workspace_name: wsName
+        });
+        HuddleAnalytics._track('Workspace Deleted No Usage', {
+          workspace_id: workspace.id,
+          workspace_name: wsName,
+          channels: channelList.length,
+          messages: msgCount,
+          invited_users: memberCount,
+          reason: 'no_meaningful_usage',
+          re_engagement_email_queued: true
+        });
+        showToast('Workspace deleted', 'Workspace deleted with no activity', 'warning');
+      } else {
+        HuddleAnalytics.identify({
+          ...user,
+          workspace_deleted: true,
+          had_meaningful_usage: true,
+          workspace_name: wsName
+        });
+        HuddleAnalytics._track('Workspace Deleted With Usage', {
+          workspace_id: workspace.id,
+          workspace_name: wsName,
+          channels: channelList.length,
+          messages: msgCount,
+          members: memberCount
+        });
+        showToast('Workspace deleted', 'Workspace deleted successfully', 'info');
+      }
+
+      // Clear session and redirect
+      sessionStorage.removeItem('huddle_workspace');
+      setTimeout(() => { window.location.href = 'onboarding.html'; }, 1500);
+    }
+
+    /* ── RIGHT PANEL ────────────────────────── */
+    function toggleRightPanel() {
+      rpVisible = !rpVisible;
+      document.getElementById('rightPanel').style.display = rpVisible ? 'flex' : 'none';
+    }
+    function showRPTab(tab) {
+      if (!rpVisible) { rpVisible = true; document.getElementById('rightPanel').style.display = 'flex'; }
+      document.getElementById('membersView').style.display = tab === 'members' ? 'block' : 'none';
+      document.getElementById('cdpView').style.display = tab === 'cdp' ? 'block' : 'none';
+      document.getElementById('tabMembers').classList.toggle('active', tab === 'members');
+      document.getElementById('tabCDP').classList.toggle('active', tab === 'cdp');
+      document.getElementById('rpTitle').textContent = tab === 'cdp' ? 'Events' : 'Members';
+    }
+
+    /* ── INPUT HELPERS ──────────────────────── */
+    document.getElementById('msgInput').addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+    document.getElementById('msgInput').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      const len = this.value.length;
+      document.getElementById('charCount').textContent = len > 0 ? len + ' chars' : '';
+    });
+
+    document.getElementById('channelModal').addEventListener('click', e => { if (e.target === document.getElementById('channelModal')) closeChannelModal(); });
+    document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === document.getElementById('deleteModal')) closeDeleteModal(); });
+  </script>
+</body>
+</html>

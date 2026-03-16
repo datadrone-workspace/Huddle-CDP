@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Huddle — Where Teams Think Together</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="responsive.css"/>
+  <style>
+    /* ═══ LANDING PAGE ═══════════════════════════ */
+
+    /* NAVBAR */
+    .nav-tag {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--primary-2);
+      background: var(--primary-dim); border: 1px solid rgba(123,97,255,0.2);
+      padding: 2px 8px; border-radius: 4px; margin-left: 12px;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 48px 80px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(123,97,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,97,255,0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+    .hero-orb-1 {
+      position: absolute; top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 600px;
+      background: radial-gradient(ellipse, rgba(123,97,255,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-orb-2 {
+      position: absolute; top: 20%; left: -150px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(56,189,248,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-orb-3 {
+      position: absolute; top: 30%; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,95,200,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 860px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: var(--r-full); padding: 7px 18px;
+      font-size: 12px; font-weight: 600; color: var(--text-2);
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s ease forwards;
+    }
+    .hero-eyebrow .dot { width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 6px var(--success); }
+    .hero-eyebrow .new-tag { background:var(--primary); color:#fff; font-size:10px; padding:2px 8px; border-radius:4px; font-weight:700; }
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -4px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero-subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-2);
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 48px; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .hero-social-proof {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .avatar-stack {
+      display: flex;
+      align-items: center;
+    }
+    .avatar-stack .mini-av {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      margin-right: -10px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .avatar-stack .mini-av:last-child { margin-right: 0; }
+    .proof-text { font-size: 13px; color: var(--text-3); font-weight: 500; }
+    .proof-text strong { color: var(--text-2); }
+    .proof-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--border-2); }
+
+    /* HERO APP WINDOW */
+    .hero-window-wrap {
+      position: relative;
+      z-index: 2;
+      margin-top: 64px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+    .hero-window {
+      width: 900px;
+      max-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(123,97,255,0.1),
+        0 40px 100px rgba(0,0,0,0.8),
+        0 0 80px rgba(123,97,255,0.08);
+    }
+    .window-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px;
+      background: var(--sidebar);
+      border-bottom: 1px solid var(--border-2);
+    }
+    .win-dots { display:flex; gap:7px; }
+    .win-dot { width:11px; height:11px; border-radius:50%; }
+    .win-dot.r { background:#FF5F57; }
+    .win-dot.y { background:#FEBC2E; }
+    .win-dot.g { background:#28C840; }
+    .win-title {
+      flex: 1; text-align: center;
+      font-size: 12px; color: var(--text-3); font-weight: 500;
+    }
+    .win-search {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 12px;
+      font-size: 11px; color: var(--text-4);
+      width: 200px;
+    }
+    .window-body { display: flex; height: 380px; }
+
+    /* Mini sidebar inside window */
+    .win-sidebar {
+      width: 180px; flex-shrink: 0;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 12px 8px;
+    }
+    .win-ws-name {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; margin-bottom: 12px;
+    }
+    .win-ws-logo {
+      width: 24px; height: 24px;
+      background: var(--primary); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff;
+    }
+    .win-ws-label { font-size: 12px; font-weight: 700; }
+    .win-sec-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-4);
+      padding: 0 10px; margin-bottom: 4px; margin-top: 8px;
+    }
+    .win-ch {
+      display: flex; align-items: center; gap: 7px;
+      padding: 5px 10px; border-radius: 6px;
+      font-size: 12px; color: var(--text-3);
+      cursor: pointer; margin-bottom: 1px;
+    }
+    .win-ch.active { background: var(--primary-dim); color: var(--primary-2); }
+    .win-ch .unread {
+      margin-left: auto; background: var(--primary);
+      color: #fff; font-size: 9px; font-weight: 700;
+      width: 15px; height: 15px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .win-dm {
+      display: flex; align-items: center; gap: 7px;
+      padding: 5px 10px; border-radius: 6px;
+      font-size: 12px; color: var(--text-3); cursor: pointer;
+    }
+    .win-dm-av {
+      width: 18px; height: 18px; border-radius: 50%;
+      font-size: 9px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative;
+    }
+    .win-status { width:6px; height:6px; border-radius:50%; border:1.5px solid var(--sidebar); position:absolute; bottom:-1px; right:-1px; }
+    .win-status.on { background:var(--success); }
+    .win-status.aw { background:var(--warning); }
+
+    /* Mini chat inside window */
+    .win-chat { flex:1; display:flex; flex-direction:column; }
+    .win-chat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
+    }
+    .win-ch-name { font-size: 13px; font-weight: 700; }
+    .win-ch-meta { font-size: 10px; color: var(--text-4); margin-top: 1px; }
+    .win-msgs {
+      flex: 1; overflow: hidden;
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .win-msg { display: flex; gap: 10px; align-items: flex-start; }
+    .win-msg-av {
+      width: 28px; height: 28px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .win-msg-meta { font-size: 11px; margin-bottom: 3px; }
+    .win-msg-author { font-weight: 700; }
+    .win-msg-time { color: var(--text-4); margin-left: 6px; }
+    .win-msg-text { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+    .win-msg-reactions { display:flex; gap:5px; margin-top:5px; }
+    .win-reaction {
+      display: flex; align-items: center; gap: 3px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: 999px; padding: 2px 7px; font-size: 11px;
+      cursor: pointer;
+    }
+    .win-typing {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 0;
+      font-size: 11px; color: var(--text-3);
+    }
+    .win-input {
+      margin: 10px 16px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: 10px; padding: 9px 14px;
+      font-size: 12px; color: var(--text-3);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* Floating badges on window */
+    .win-badge {
+      position: absolute;
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      white-space: nowrap;
+      animation: float 4s ease-in-out infinite;
+    }
+    .win-badge-1 { left: -60px; bottom: 60px; animation-delay: 0s; }
+    .win-badge-2 { right: -50px; top: 80px; animation-delay: 1.8s; }
+    .win-badge-3 { right: -70px; bottom: 40px; animation-delay: 0.9s; }
+    .win-badge-icon {
+      width: 34px; height: 34px; border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .win-badge-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+    .win-badge-sub { font-size: 11px; color: var(--text-3); }
+
+    /* LOGOS MARQUEE */
+    .logos-section {
+      padding: 56px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .logos-label {
+      text-align: center;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--text-4);
+      margin-bottom: 28px;
+    }
+    .logos-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 30s linear infinite;
+      width: max-content;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .logo-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 36px;
+      border-right: 1px solid var(--border);
+      font-size: 15px; font-weight: 700; color: var(--text-4);
+      letter-spacing: -0.3px; white-space: nowrap;
+      transition: color 0.2s;
+    }
+    .logo-item:hover { color: var(--text-2); }
+
+    /* FEATURES */
+    .features-section { padding: 120px 64px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .feature-cell {
+      background: var(--bg-2);
+      padding: 40px 36px;
+      transition: var(--t);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-cell::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+    .feature-cell:hover::before { transform: scaleX(1); }
+    .feature-cell:hover { background: var(--surface); }
+    .feature-cell.span-2 { grid-column: span 2; }
+    .feat-icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-2);
+      background: var(--surface-2);
+    }
+    .feature-cell h4 { font-size: 17px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+    .feature-cell p { font-size: 13px; color: var(--text-2); line-height: 1.75; }
+    .feat-tag {
+      display: inline-block; margin-top: 16px;
+      font-size: 10px; font-weight: 700;
+      color: var(--primary-2); background: var(--primary-dim);
+      border: 1px solid rgba(123,97,255,0.2);
+      padding: 3px 10px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .feat-visual {
+      margin-top: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r);
+      padding: 14px;
+    }
+
+    /* THREAD VISUAL */
+    .thread-vis-item {
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 8px 10px; border-radius: var(--r-sm);
+      margin-bottom: 4px; background: var(--surface); border: 1px solid var(--border);
+    }
+    .thread-vis-item.indent { margin-left: 20px; background: var(--bg); }
+    .tv-av { width:24px; height:24px; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; }
+    .tv-name { font-size:11px; font-weight:700; margin-bottom:2px; }
+    .tv-text { font-size:11px; color:var(--text-2); }
+
+    
+
+    /* USE CASES */
+    .usecases-section {
+      padding: 120px 64px;
+      background: linear-gradient(180deg, transparent 0%, rgba(123,97,255,0.03) 40%, transparent 100%);
+    }
+    .uc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; }
+    .uc-card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-xl);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--t-slow);
+    }
+    .uc-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(123,97,255,0.06) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .uc-card:hover { border-color: rgba(123,97,255,0.35); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(123,97,255,0.08); }
+    .uc-card:hover::after { opacity: 1; }
+    .uc-num {
+      position: absolute; top: 24px; right: 24px;
+      font-size: 64px; font-weight: 900;
+      color: var(--border-2); line-height: 1;
+      letter-spacing: -4px; font-family: var(--font);
+    }
+    .uc-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: var(--r-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .uc-card h3 { font-size: 19px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.4px; }
+    .uc-card p { font-size: 13px; color: var(--text-2); line-height: 1.8; margin-bottom: 20px; }
+    .uc-event-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text-3);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 10px;
+    }
+    .uc-event-name {
+      font-weight: 700; color: var(--primary-2); font-family: var(--font);
+    }
+    .uc-points { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .uc-point {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-2);
+    }
+    .uc-point::before {
+      content: ''; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* STATS ROW */
+    .stats-section {
+      padding: 80px 64px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; max-width:900px; margin:0 auto; }
+    .stat-block {
+      background: var(--bg-2);
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .stat-num { font-size: 48px; font-weight: 900; letter-spacing: -3px; line-height: 1; margin-bottom: 8px; }
+    .stat-label { font-size: 13px; color: var(--text-3); font-weight: 500; }
+
+    /* TESTIMONIALS */
+    .testimonials-section { padding: 120px 64px; }
+    .testimonials-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; }
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-xl);
+      padding: 32px;
+      transition: var(--t);
+    }
+    .testimonial-card:hover { border-color: var(--border-3); transform: translateY(-2px); }
+    .stars { display: flex; gap: 3px; margin-bottom: 16px; }
+    .star { font-size: 14px; }
+    .quote { font-size: 14px; color: var(--text-2); line-height: 1.8; margin-bottom: 20px; font-style: italic; }
+    .reviewer { display: flex; align-items: center; gap: 12px; }
+    .reviewer-av { width:40px; height:40px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; }
+    .reviewer-name { font-size: 14px; font-weight: 700; }
+    .reviewer-role { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+    /* CTA SECTION */
+    .cta-section {
+      position: relative;
+      padding: 160px 64px;
+      text-align: center;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+    }
+    .cta-orb {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(123,97,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(123,97,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,97,255,0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+    .cta-content { position:relative; z-index:2; }
+    .cta-content h2 { font-size: clamp(36px,6vw,64px); letter-spacing:-3px; margin-bottom:16px; }
+    .cta-content p { font-size: 18px; color: var(--text-2); max-width: 480px; margin: 0 auto 40px; line-height: 1.7; }
+    .cta-actions { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .cta-guarantee { font-size: 12px; color: var(--text-4); margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .cta-guarantee span { display:flex; align-items:center; gap:5px; }
+
+    /* FOOTER */
+    .footer {
+      padding: 64px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand p { font-size:13px; color:var(--text-3); margin-top:12px; line-height:1.7; max-width:240px; }
+    .footer-social { display:flex; gap:8px; margin-top:20px; }
+    .social-btn {
+      width:34px; height:34px; border-radius:8px;
+      background:var(--surface-2); border:1px solid var(--border-2);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; transition:var(--t); cursor:pointer;
+    }
+    .social-btn:hover { border-color:var(--primary); background:var(--primary-dim); }
+    .footer-col-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-3); margin-bottom:16px; }
+    .footer-col-links { display:flex; flex-direction:column; gap:10px; }
+    .footer-link { font-size:13px; color:var(--text-3); transition:color 0.15s; }
+    .footer-link:hover { color:var(--text); }
+    .footer-bottom {
+      display:flex; align-items:center; justify-content:space-between;
+      padding-top:24px; border-top:1px solid var(--border);
+      font-size:12px; color:var(--text-4);
+    }
+    .footer-bottom-links { display:flex; gap:20px; }
+    .footer-bottom-links a { color:var(--text-4); transition:color 0.15s; }
+    .footer-bottom-links a:hover { color:var(--text-3); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">⬡</div>
+      Huddle
+      <span class="nav-tag">Beta</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#usecases" class="nav-link">Use Cases</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="#testimonials" class="nav-link">Customers</a>
+      
+    </div>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Sign in</a>
+      <a href="signup.html" class="btn btn-primary">Get Started Free →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-orb-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        <span>Now in Beta — 2,400+ teams joined</span>
+        <span class="new-tag">NEW</span>
+      </div>
+      <h1>
+        The workspace<br/>
+        where teams<br/>
+        <span class="gradient-text">think together.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Huddle combines real-time messaging, threaded conversations, and smart notifications to help every team member stay in sync — no matter where they work.
+      </p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn btn-primary btn-xl">
+          Start for free — no card needed
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="app.html" class="btn btn-outline btn-lg">See live demo →</a>
+      </div>
+      <div class="hero-social-proof">
+        <div class="avatar-stack">
+          <div class="mini-av" style="background:#7B61FF">S</div>
+          <div class="mini-av" style="background:#23D18B">J</div>
+          <div class="mini-av" style="background:#F5A623">M</div>
+          <div class="mini-av" style="background:#FF5F5F">R</div>
+          <div class="mini-av" style="background:#38BDF8">K</div>
+        </div>
+        <span class="proof-text"><strong>2,400+</strong> teams already using Huddle</span>
+        <div class="proof-divider"></div>
+        <span class="proof-text">⭐ <strong>4.9/5</strong> from 800+ reviews</span>
+        <div class="proof-divider"></div>
+        <span class="proof-text">🔒 SOC 2 Type II certified</span>
+      </div>
+    </div>
+
+    <!-- APP WINDOW MOCKUP -->
+    <div class="hero-window-wrap" style="position:relative;">
+      <div class="hero-window">
+        <div class="window-bar">
+          <div class="win-dots">
+            <div class="win-dot r"></div>
+            <div class="win-dot y"></div>
+            <div class="win-dot g"></div>
+          </div>
+          <div class="win-title">Huddle — Acme Corp Workspace</div>
+          <div class="win-search">
+            <span>🔍</span>
+            <span>Search everything...</span>
+            <span style="margin-left:auto;font-size:10px;background:var(--surface-3);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘K</span>
+          </div>
+        </div>
+        <div class="window-body">
+          <div class="win-sidebar">
+            <div class="win-ws-name">
+              <div class="win-ws-logo">A</div>
+              <span class="win-ws-label">Acme Corp</span>
+            </div>
+            <div class="win-sec-title">Channels</div>
+            <div class="win-ch active"># general <span class="unread">4</span></div>
+            <div class="win-ch"># marketing</div>
+            <div class="win-ch"># engineering</div>
+            <div class="win-ch"># design</div>
+            <div class="win-ch"># random</div>
+            <div class="win-sec-title" style="margin-top:14px">Direct Messages</div>
+            <div class="win-dm">
+              <div class="win-dm-av" style="background:#7B61FF">S<div class="win-status on"></div></div>
+              Sarah K.
+            </div>
+            <div class="win-dm">
+              <div class="win-dm-av" style="background:#23D18B">J<div class="win-status aw"></div></div>
+              James R.
+            </div>
+            <div class="win-dm">
+              <div class="win-dm-av" style="background:#F5A623">M<div class="win-status on"></div></div>
+              Maya T.
+            </div>
+          </div>
+          <div class="win-chat">
+            <div class="win-chat-header">
+              <div>
+                <div class="win-ch-name"># general</div>
+                <div class="win-ch-meta">8 members · Company-wide announcements</div>
+              </div>
+              <div style="display:flex;gap:8px;font-size:14px;color:var(--text-4)">👥 🔍 📌</div>
+            </div>
+            <div class="win-msgs">
+              <div class="win-msg">
+                <div class="win-msg-av" style="background:#7B61FF">S</div>
+                <div>
+                  <div class="win-msg-meta"><span class="win-msg-author">Sarah K.</span><span class="win-msg-time">9:30 AM</span></div>
+                  <div class="win-msg-text">Morning everyone! New dashboard pushed to staging. All green on tests 🚀</div>
+                  <div class="win-msg-reactions"><div class="win-reaction">🚀 4</div><div class="win-reaction">👀 2</div></div>
+                </div>
+              </div>
+              <div class="win-msg">
+                <div class="win-msg-av" style="background:#23D18B">J</div>
+                <div>
+                  <div class="win-msg-meta"><span class="win-msg-author">James R.</span><span class="win-msg-time">9:34 AM</span></div>
+                  <div class="win-msg-text">Tested on Chrome + Safari — looks perfect! The new analytics charts are 🔥</div>
+                </div>
+              </div>
+              <div class="win-msg">
+                <div class="win-msg-av" style="background:#F5A623">M</div>
+                <div>
+                  <div class="win-msg-meta"><span class="win-msg-author">Maya T.</span><span class="win-msg-time">9:41 AM</span></div>
+                  <div class="win-msg-text">Team standup is in 20 mins 📅 See you all there!</div>
+                </div>
+              </div>
+              <div class="win-msg">
+                <div class="win-msg-av" style="background:#38BDF8">K</div>
+                <div>
+                  <div class="win-msg-meta"><span class="win-msg-author">Kim L.</span><span class="win-msg-time">9:48 AM</span></div>
+                  <div class="win-msg-text">🎉 We hit 500 signups this week!! Huge milestone team!</div>
+                  <div class="win-msg-reactions"><div class="win-reaction">🎉 8</div><div class="win-reaction">🔥 6</div><div class="win-reaction">💪 4</div></div>
+                </div>
+              </div>
+              <div class="win-typing">
+                <div class="typing-dots">
+                  <div class="typing-dot"></div>
+                  <div class="typing-dot"></div>
+                  <div class="typing-dot"></div>
+                </div>
+                <span style="margin-left:5px">Sarah is typing...</span>
+              </div>
+            </div>
+            <div class="win-input">
+              <span>Message #general</span>
+              <span style="font-size:16px;color:var(--text-4)">😊 📎 ✉️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+  </div>
+  </section>
+
+  <!-- LOGOS -->
+  <section class="logos-section">
+    <p class="logos-label">Trusted by teams at</p>
+    <div style="overflow:hidden">
+      <div class="logos-track">
+        <div class="logo-item">▲ Vercel</div>
+        <div class="logo-item">◆ Linear</div>
+        <div class="logo-item">■ Notion</div>
+        <div class="logo-item">◉ Stripe</div>
+        <div class="logo-item">⬡ Figma</div>
+        <div class="logo-item">▸ Raycast</div>
+        <div class="logo-item">● Loom</div>
+        <div class="logo-item">◈ Retool</div>
+        <div class="logo-item">▲ Vercel</div>
+        <div class="logo-item">◆ Linear</div>
+        <div class="logo-item">■ Notion</div>
+        <div class="logo-item">◉ Stripe</div>
+        <div class="logo-item">⬡ Figma</div>
+        <div class="logo-item">▸ Raycast</div>
+        <div class="logo-item">● Loom</div>
+        <div class="logo-item">◈ Retool</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-header">
+      <div class="eyebrow">Platform Features</div>
+      <h2>Built for how modern<br/>teams actually work</h2>
+      <p>Every feature designed to reduce noise, increase focus, and make collaboration feel effortless.</p>
+    </div>
+    <div class="features-grid">
+      
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-block">
+        <div class="stat-num gradient-text">2.4K+</div>
+        <div class="stat-label">Active Workspaces</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num gradient-text">18M+</div>
+        <div class="stat-label">Messages Sent</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num gradient-text">99.9%</div>
+        <div class="stat-label">Uptime SLA</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num gradient-text">4.9★</div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="section-header">
+      <div class="eyebrow">Customer Stories</div>
+      <h2>Loved by teams who care<br/>about <span class="gradient-text">how they work</span></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="quote">"Switching to Huddle was the best decision we made this year. The interface is clean, fast, and our team actually enjoys using it."</div>
+        <div class="reviewer">
+          <div class="reviewer-av" style="background:#7B61FF">A</div>
+          <div>
+            <div class="reviewer-name">Alex Chen</div>
+            <div class="reviewer-role">Head of Growth · Vercel</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="quote">"Huddle transformed how our team communicates. The simplicity is remarkable — everyone adopted it within days and we have not looked back since."</div>
+        <div class="reviewer">
+          <div class="reviewer-av" style="background:#23D18B">P</div>
+          <div>
+            <div class="reviewer-name">Priya Sharma</div>
+            <div class="reviewer-role">CEO · Buildspace</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="quote">"The threaded conversations changed everything for us. No more lost context, no more endless scroll. Our async communication is finally working."</div>
+        <div class="reviewer">
+          <div class="reviewer-av" style="background:#F5A623">T</div>
+          <div>
+            <div class="reviewer-name">Tom Wright</div>
+            <div class="reviewer-role">CTO · Ramp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-orb"></div>
+    <div class="cta-grid"></div>
+    <div class="cta-content">
+      <div class="badge badge-primary badge-lg" style="margin:0 auto 28px;display:inline-flex">✦ Free forever for small teams</div>
+      <h2>Your team is waiting.<br/><span class="gradient-text">Set up in 2 minutes.</span></h2>
+      <p>No credit card. No setup fees. Invite unlimited teammates on the free plan. Upgrade when you're ready.</p>
+      <div class="cta-actions">
+        <a href="signup.html" class="btn btn-primary btn-xl">
+          Create your workspace →
+        </a>
+        <a href="login.html" class="btn btn-outline btn-lg">Sign in to existing workspace</a>
+      </div>
+      <div class="cta-guarantee">
+        <span>🔒 SOC 2 Type II</span>
+        <span>🇪🇺 GDPR Ready</span>
+        <span>99.9% uptime SLA</span>
+        <span>24/7 support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-brand" style="margin-bottom:0">
+          <div class="nav-logo">⬡</div>
+          Huddle
+        </div>
+        <p>Where teams think together. Real-time messaging, threaded conversations, and smart notifications for modern teams.</p>
+        <div class="footer-social">
+          <div class="social-btn">𝕏</div>
+          <div class="social-btn">in</div>
+          <div class="social-btn">gh</div>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <div class="footer-col-links">
+          <a href="#" class="footer-link">Features</a>
+          <a href="#" class="footer-link">Pricing</a>
+          <a href="#" class="footer-link">Changelog</a>
+          <a href="#" class="footer-link">Roadmap</a>
+          <a href="#" class="footer-link">API Docs</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Solutions</div>
+        <div class="footer-col-links">
+          <a href="#" class="footer-link">For Startups</a>
+          <a href="#" class="footer-link">For Enterprise</a>
+          <a href="#" class="footer-link">For Remote Teams</a>
+          <a href="#" class="footer-link">Integrations</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-col-links">
+          <a href="#" class="footer-link">About</a>
+          <a href="#" class="footer-link">Blog</a>
+          <a href="#" class="footer-link">Careers</a>
+          <a href="#" class="footer-link">Press Kit</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <div class="footer-col-links">
+          <a href="#" class="footer-link">Privacy Policy</a>
+          <a href="#" class="footer-link">Terms of Service</a>
+          <a href="#" class="footer-link">Cookie Policy</a>
+          <a href="#" class="footer-link">Security</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Huddle Inc. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Status</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";analytics._cdn="https://cdn.segment.com";analytics.SNIPPET_VERSION="5.2.0";
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+    }}();
+  </script>
+  <script src="segment.js"></script>
+  <script>
+    window.addEventListener('huddle:event', e => addSegEvent(e.detail));
+    HuddleAnalytics.init();
+    HuddleAnalytics.page('Landing Page');
+
+    // CTA click tracking
+    document.querySelectorAll('a[href="signup.html"]').forEach(el => {
+      el.addEventListener('click', () => HuddleAnalytics._track('CTA Clicked', { cta: 'get_started', page: 'landing' }));
+    });
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.uc-card, .feature-cell, .testimonial-card, .stat-block').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

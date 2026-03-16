@@ -1,0 +1,272 @@
+/* ═══════════════════════════════════════════════════════════
+   HUDDLE — Responsive Overrides
+   All breakpoints in one place. Import after style.css.
+   Breakpoints:
+     tablet  → max-width: 1024px
+     mobile  → max-width: 768px
+     small   → max-width: 480px
+═══════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────
+   SHARED / GLOBAL
+───────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .navbar { padding: 0 24px; }
+  .nav-links { display: none; }
+  .nav-actions .btn-ghost { display: none; }
+
+  .section-header { padding: 0 24px; }
+  .features-section,
+  .usecases-section,
+  .testimonials-section,
+  .stats-section,
+  .cta-section { padding: 72px 32px; }
+
+  .footer { padding: 48px 32px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 768px) {
+  .navbar { padding: 0 16px; height: 56px; }
+  .nav-actions { gap: 6px; }
+  .nav-actions .btn-primary { padding: 8px 14px; font-size: 13px; }
+
+  /* hero */
+  .hero { padding: 80px 20px 60px; }
+  .hero h1 { font-size: clamp(36px, 10vw, 56px); letter-spacing: -2px; }
+  .hero-subtitle { font-size: 15px; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { text-align: center; justify-content: center; }
+  .hero-social-proof { flex-direction: column; gap: 8px; }
+  .proof-divider { display: none; }
+  .hero-window-wrap { display: none; }
+
+  /* features */
+  .features-section { padding: 56px 16px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-cell.span-2 { grid-column: span 1; }
+
+  /* stats */
+  .stats-section { padding: 48px 16px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+
+  /* use cases */
+  .usecases-section { padding: 56px 16px; }
+  .uc-grid { grid-template-columns: 1fr; }
+
+  /* testimonials */
+  .testimonials-section { padding: 56px 16px; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+
+  /* cta */
+  .cta-section { padding: 80px 16px; }
+  .cta-content h2 { font-size: clamp(28px, 8vw, 44px); }
+  .cta-actions { flex-direction: column; align-items: stretch; }
+  .cta-guarantee { flex-direction: column; gap: 8px; }
+
+  /* footer */
+  .footer { padding: 40px 16px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+}
+
+
+/* ─────────────────────────────────────────────
+   AUTH PAGES (login.html / signup.html)
+───────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .auth-right { display: none; }
+  .auth-left { width: 100%; border-right: none; }
+}
+
+@media (max-width: 768px) {
+  .auth-left { width: 100%; }
+  .auth-form-wrap { padding: 32px 24px; }
+  .auth-left-header { padding: 20px 24px 0; }
+  .auth-title { font-size: 26px; }
+  .input-row { grid-template-columns: 1fr; }
+  .auth-right-stats { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .auth-form-wrap { padding: 24px 16px; }
+  .auth-left-header { padding: 16px 16px 0; }
+}
+
+
+/* ─────────────────────────────────────────────
+   ONBOARDING (onboarding.html)
+───────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .ob-sidebar { width: 220px; }
+  .ob-main { padding: 40px 32px; }
+}
+
+@media (max-width: 768px) {
+  .ob-topbar { padding: 0 16px; }
+  .ob-body { flex-direction: column; }
+
+  .ob-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-2);
+    padding: 16px;
+  }
+
+  /* Collapse step list to horizontal pills on mobile */
+  .ob-step-list { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .ob-step-connector { display: none; }
+  .ob-step-row { padding: 8px 12px; white-space: nowrap; flex-shrink: 0; }
+  .ob-step-desc { display: none; }
+  .ob-event-sidebar { display: none; }
+
+  .ob-main { padding: 28px 16px; overflow-y: auto; }
+  .ob-content { max-width: 100%; }
+  .ob-panel-title { font-size: 26px; letter-spacing: -1px; }
+
+  .channel-type-switch { gap: 6px; }
+  .profile-preview-card { flex-direction: column; text-align: center; }
+  .fmp-existing { display: none; }
+}
+
+@media (max-width: 480px) {
+  .ob-main { padding: 20px 12px; }
+  .ob-panel-title { font-size: 22px; }
+  .ob-btn-row { flex-direction: column; }
+  .ob-next-btn { width: 100%; justify-content: center; }
+}
+
+
+/* ─────────────────────────────────────────────
+   APP (app.html)
+───────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  /* Hide right panel by default on tablet */
+  .right-panel { display: none !important; }
+  .ws-bar { display: none; }
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 10px; gap: 8px; }
+  .topbar-brand { font-size: 14px; }
+  .topbar-search { display: none; }
+  .topbar-right { gap: 4px; }
+  .topbar-icon-btn { width: 26px; height: 26px; font-size: 11px; }
+
+  .app-shell { flex-direction: column; }
+
+  /* Sidebar collapses to top nav strip on mobile */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border-2);
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .sidebar-top { border-bottom: none; border-right: 1px solid var(--border-2); flex-shrink: 0; padding: 8px 12px; min-width: 140px; }
+  .sidebar-body { display: flex; flex-direction: row; padding: 8px 6px; gap: 4px; align-items: center; overflow-x: auto; white-space: nowrap; }
+  .sb-section { margin-bottom: 0; display: flex; align-items: center; gap: 2px; }
+  .sb-section-hdr { display: none; }
+  .ch-item { padding: 5px 10px; font-size: 12px; flex-shrink: 0; border-radius: 6px; }
+  .ch-item .ch-unread { display: none; }
+  .demo-bar { display: none; }
+  .mobile-demo-bar { display: flex !important; }
+
+  /* Chat area fills screen */
+  .chat-area { flex: 1; min-height: 0; }
+  .chat-header { padding: 0 12px; }
+  .ch-hdr-desc { display: none; }
+  .ch-hdr-divider { display: none; }
+  .members-pill { display: none; }
+
+  .messages-wrap { padding: 12px; }
+  .msg { padding: 3px 4px; }
+  .msg-av { width: 30px; height: 30px; font-size: 12px; border-radius: 8px; }
+  .msg-text { font-size: 13px; }
+
+  .input-area { padding: 0 8px 10px; }
+  .input-toolbar { display: none; }
+  .input-footer { display: none; }
+  .input-body { padding: 8px 10px; }
+  #msgInput { font-size: 13px; }
+
+  /* Modals full-width on mobile */
+  .modal { width: calc(100vw - 32px); padding: 24px; }
+  .misuse-box,
+  .enterprise-box,
+  .delete-box { width: calc(100vw - 32px); padding: 28px 20px; }
+  .enterprise-stats { grid-template-columns: 1fr; gap: 8px; }
+  .modal-type-row { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .sidebar-top { display: none; }
+  .topbar-brand span { display: none; }
+  .chat-header { height: 44px; }
+  .ch-hdr-name { font-size: 13px; }
+}
+
+
+/* ─────────────────────────────────────────────
+   ADMIN (admin.html)
+───────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .admin-body { padding: 24px 24px; }
+  .stat-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .settings-grid { grid-template-columns: 1fr 1fr; }
+  .three-col { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .admin-topbar { padding: 0 16px; }
+  .topbar-page-title { display: none; }
+  .admin-body { padding: 20px 16px; }
+
+  .stat-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-value { font-size: 24px; }
+
+  .two-col { grid-template-columns: 1fr; }
+  .three-col { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+
+  .billing-card { padding: 18px; }
+  .billing-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .billing-features { grid-template-columns: 1fr; gap: 6px; }
+
+  .danger-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .admin-topbar-right .ws-chip { display: none; }
+  .stat-row { grid-template-columns: 1fr; }
+  .admin-body { padding: 16px 12px; }
+}
+
+
+/* ─────────────────────────────────────────────
+   TOAST — always accessible on mobile
+───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .toast-container {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: 100%;
+  }
+  .toast { width: 100%; }
+}
